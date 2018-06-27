@@ -1,0 +1,41 @@
+{
+  "name": "nc-news-be",
+  "version": "1.0.0",
+  "description": "A simple, user-friendly API serving data for an article based web app",
+  "main": "index.js",
+  "scripts": {
+    "test": "",
+    "posttest": "eslint .",
+    "precommit": "npm t"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jdunsby/NC-news-BE.git"
+  },
+  "keywords": [
+    "API",
+    "articles",
+    "news"
+  ],
+  "author": "Jonathan Dunsby",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jdunsby/NC-news-BE/issues"
+  },
+  "homepage": "https://github.com/Jdunsby/NC-news-BE#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^5.0.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "husky": "^0.14.3",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.5",
+    "supertest": "^3.1.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3"
+  }
+}
