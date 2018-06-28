@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
-const { Topic } = require('../../models');
+const { Topic, User } = require('../../models');
 
-const seedDb = ({topicData}) => {
+const seedDb = ({topicData, userData}) => {
   return mongoose.connection.dropDatabase()
     .then(() => {
-      return Topic.insertMany(topicData);
+      return Promise.all([
+        Topic.insertMany(topicData),
+        User.insertMany(userData)
+      ]);
     });
 };
 
