@@ -8,6 +8,7 @@
     "posttest": "eslint .",
     "dev": "nodemon index.js",
     "start": "node index.js",
+    "seed:dev":"node db/seed/run-seed.js",
     "precommit": "npm t"
   },
   "repository": {

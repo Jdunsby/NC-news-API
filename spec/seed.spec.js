@@ -3,23 +3,23 @@ process.env.NODE_ENV = 'test';
 const mongoose = require('mongoose');
 const { expect } = require('chai');
 const { DB_URL } = require('../config');
-const seedDb = require('../db/seed/seed');
+const seedDB = require('../db/seed/seed');
 const seedData = require('../db/seed/testData');
 
 
-describe('seedDb()', () => {
+describe('seedDB()', () => {
   let topicDocs, userDocs, articleDocs, commentDocs;
   before(() => {
     return mongoose.connect(DB_URL)
       .then(() => {
-        return seedDb(seedData);
+        return seedDB(seedData);
       })
       .then(testData => {
         [topicDocs, userDocs, articleDocs, commentDocs] = testData;
       })
       .catch(console.error);
   });
-
+  
   after(() => {
     return mongoose.disconnect();
   });
