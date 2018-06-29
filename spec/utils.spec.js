@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { createRef } = require('../utils/seeding');
+const { createRef, addRefs } = require('../utils/seeding');
 
 describe.only('utils', () => {
   describe('createRef()', () => {
@@ -138,6 +138,80 @@ describe.only('utils', () => {
       };
       expect(createRef(animals, 'species', null)).to.eql(expected1);
       expect(createRef(animals, 'species', 5)).to.eql(expected2);
+    });
+  });
+
+
+  describe('addrefs()', () => {
+    it('returns an empty array if the passed collction (2nd arg) is an empty array', () => {
+      const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      expect(addRefs(topicRef, [])).to.be.empty.and.an('array');
+    });
+
+    it('returns a new array', () => {
+      const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
+      const articles = [{ title: 'banana', belongs_to: 'examples' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      expect(addRefs(topicRef, articles, 'belongs_to')).to.not.equal(articles);
+    });
+
+    it('does not mutate the passed in reference object (1st arg)', () => {
+      const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
+      const articles = [{ title: 'banana', belongs_to: 'examples' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      const topicRefCopy = { ...topicRef };
+      addRefs(topicRef, articles, 'belongs_to');
+      expect(topicRef).to.eql(topicRefCopy);
+    });
+
+    it('does not mutate the objects in the passed collection (2nd arg)', () => {
+      const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      const articles = [{ title: 'banana', belongs_to: 'examples' }];
+      const articlesCopy = [...articles];
+      const newCollectionItem = addRefs(topicRef, articles, 'belongs_to')[0];
+      expect(newCollectionItem).to.not.equal(articlesCopy[0]);
+      expect(articles).to.have.lengthOf(articlesCopy.length);
+    });
+
+    it('replaces the value on the specified replaceKey (3rd arg) of each item with the corresponding reference', () => {
+      const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      const articles = [{ title: 'banana', belongs_to: 'examples' }];
+      const expected = [{ title: 'banana', belongs_to: '507f1f77bcf86cd799439011' }];
+      expect(addRefs(topicRef, articles, 'belongs_to')).to.eql(expected);
+    });
+
+    it('doesn`t alter any items in the collection that don`t have the replaceKey (3rd arg) as a key', () => {
+      const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      const articles = [{ title: 'banana' }];
+      const expected = [{ title: 'banana' }];
+      expect(addRefs(topicRef, articles, 'belongs_to')).to.eql(expected);
+    });
+
+    it('doesn`t alter any items whose replaceKey (3rd arg) references have an invalid corresponding reference', () => {
+      const topics = [{ slug: 'examples', _id: 'hi' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      const articles = [{ title: 'banana', belongs_to: 'examples' }];
+      const expected = [{ title: 'banana', belongs_to: 'examples' }];
+      expect(addRefs(topicRef, articles, 'belongs_to')).to.eql(expected);
+    });
+
+    it('doesn`t alter any items whose replaceKey (3rd arg) reference doesn`t exist', () => {
+      const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      const articles = [{ title: 'banana', belongs_to: 'liz' }];
+      const expected = [{ title: 'banana', belongs_to: 'liz' }];
+      expect(addRefs(topicRef, articles, 'belongs_to')).to.eql(expected);
+    });
+    
+    it('returns a copy of the original collection if replaceKey (3rd arg) isn`t specified', () => {
+      const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
+      const topicRef = createRef(topics, 'slug', '_id');
+      const articles = [{ title: 'banana', belongs_to: 'liz' }];
+      expect(addRefs(topicRef, articles)).to.eql(articles);
     });
   });
 });
