@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test';
+
 const mongoose = require('mongoose');
 const { expect } = require('chai');
 const { DB_URL } = require('../config');

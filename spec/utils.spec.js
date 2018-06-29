@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test';
+
 const { expect } = require('chai');
 const { createRef, addRefs } = require('../utils/seeding');
 
