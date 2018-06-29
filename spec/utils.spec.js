@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { createRef, addRefs } = require('../utils/seeding');
 
-describe.only('utils', () => {
+describe('utils', () => {
   describe('createRef()', () => {
     it('returns an empty object when passed an empty array', () => {
       expect(createRef([])).to.be.empty.and.an('object');
