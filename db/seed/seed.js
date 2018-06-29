@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const { Topic, User, Article } = require('../../models');
+const { Topic, User, Article, Comment } = require('../../models');
 const { createRef, addRefs } = require('../../utils/seeding');
 
-const seedDb = ({ topicData, userData, articleData }) => {
+const seedDb = ({ topicData, userData, articleData, commentData }) => {
   return mongoose.connection.dropDatabase()
     .then(() => {
       return Promise.all([
@@ -18,7 +18,19 @@ const seedDb = ({ topicData, userData, articleData }) => {
       return Promise.all([
         topics,
         users,
-        Article.insertMany(articleData)
+        Article.insertMany(articleData),
+        userRef
+      ]);
+    })
+    .then(([topics, users, articles, userRef]) => {
+      const articleRef = createRef(articles, 'title', '_id');
+      commentData = addRefs(articleRef, commentData, 'belongs_to');
+      commentData = addRefs(userRef, commentData, 'created_by');
+      return Promise.all([
+        topics,
+        users,
+        articles,
+        Comment.insertMany(commentData)
       ]);
     });
 };

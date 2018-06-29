@@ -6,14 +6,14 @@ const seedData = require('../db/seed/testData');
 
 
 describe('seedDb()', () => {
-  let topicDocs, userDocs, articleDocs;
+  let topicDocs, userDocs, articleDocs, commentDocs;
   before(() => {
     return mongoose.connect(DB_URL)
       .then(() => {
         return seedDb(seedData);
       })
       .then(testData => {
-        [topicDocs, userDocs, articleDocs] = testData;
+        [topicDocs, userDocs, articleDocs, commentDocs] = testData;
       })
       .catch(console.error);
   });
@@ -21,6 +21,7 @@ describe('seedDb()', () => {
   after(() => {
     return mongoose.disconnect();
   });
+
 
   describe('Topics', () => {
     it('returns seeded topic data', () => {
@@ -50,6 +51,7 @@ describe('seedDb()', () => {
     });
   });
 
+
   describe('Articles', () => {
     it('returns seeded article data', () => {
       const testArticle = articleDocs[0].toObject();
@@ -63,6 +65,22 @@ describe('seedDb()', () => {
       expect(testArticle.belongs_to).to.eql(topicDocs[0]._id);
       expect(testArticle.created_by).to.eql(userDocs[0]._id);
       expect(testArticle.created_at).to.be.an.instanceOf(Date);
+    });
+  });
+
+  
+  describe('Comments', () => {
+    it('returns seeded comment data', () => {
+      const testComment = commentDocs[0].toObject();
+      const commentIdIsValid = mongoose.Types.ObjectId.isValid(testComment._id);
+      
+      expect(commentDocs).to.have.lengthOf(8);
+      expect(testComment).to.include.keys('_id', 'body', 'belongs_to', 'created_by', 'created_at', 'votes');
+      expect(commentIdIsValid).to.be.true;
+      expect(testComment.body).to.equal('Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — on you it works.');
+      expect(testComment.belongs_to).to.eql(articleDocs[0]._id);
+      expect(testComment.created_by).to.eql(userDocs[1]._id);
+      expect(testComment.created_at).to.be.an.instanceOf(Date);
     });
   });
 });
