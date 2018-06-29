@@ -6,6 +6,8 @@
   "scripts": {
     "test": "mocha ./spec",
     "posttest": "eslint .",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "precommit": "npm t"
   },
   "repository": {
