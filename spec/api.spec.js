@@ -34,5 +34,18 @@ describe('API', () => {
           expect(testTopic.slug).to.equal(topicDocs[0].slug);
         });
     });
+    it('GET /api/topics/:topic_id responds with the specified topic', () => {
+      return request
+        .get(`/api/topics/${topicDocs[1]._id}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('topic');
+          expect(body.topic).to.be.an('object');
+          expect(body.topic).to.include.all.keys('_id', 'title', 'slug');
+          expect(body.topic._id).to.equal(`${topicDocs[1]._id}`);
+          expect(body.topic.title).to.equal(topicDocs[1].title);
+          expect(body.topic.slug).to.equal(topicDocs[1].slug);
+        });
+    });
   });
 });
