@@ -58,5 +58,16 @@ describe('API', () => {
           expect(body.message).to.equal('Cast to ObjectId failed for value "something" at path "_id" for model "topics"');
         });
     });
+    it('Error: GET /api/topics/:topic_id responds with a 404 error when passed a valid topic id that doesn`t exist', () => {
+      return request
+        .get('/api/topics/507f191e810c19729de860ea')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('Topic not found');
+        });
+    });
   });
 });
