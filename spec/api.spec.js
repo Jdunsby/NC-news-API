@@ -8,11 +8,11 @@ const seedDB = require('../db/seed/seed');
 const testData = require('../db/seed/testData');
 
 describe('API', () => {
-  let topicDocs, userDocs;
+  let topicDocs, userDocs, articleDocs;
   beforeEach(() => {
     return seedDB(testData)
       .then(docs => {
-        [topicDocs, userDocs] = docs;
+        [topicDocs, userDocs, articleDocs] = docs;
       })
       .catch(console.error);
   });
@@ -35,7 +35,7 @@ describe('API', () => {
         });
     });
 
-    it('GET /api/topics/:topic_id responds with the specified topic', () => {
+    it('GET /api/topics/:topic_id responds with the requested topic', () => {
       return request
         .get(`/api/topics/${topicDocs[1]._id}`)
         .expect(200)
@@ -61,7 +61,7 @@ describe('API', () => {
         });
     });
 
-    it('Error: GET /api/topics/:topic_id responds with a 404 error when passed a valid topic id that doesn`t exist', () => {
+    it('Error: GET /api/topics/:topic_id responds with a 404 error when passed a valid topic_id that doesn`t exist', () => {
       return request
         .get('/api/topics/507f191e810c19729de860ea')
         .expect(404)
@@ -91,7 +91,7 @@ describe('API', () => {
         });
     });
 
-    it('GET /api/users/:user_id responds with the specified user', () => {
+    it('GET /api/users/:user_id responds with the requested user', () => {
       return request
         .get(`/api/users/${userDocs[1]._id}`)
         .expect(200)
@@ -118,7 +118,7 @@ describe('API', () => {
         });
     });
 
-    it('Error: GET /api/users/:user_id responds with a 404 error when passed a valid user id that doesn`t exist', () => {
+    it('Error: GET /api/users/:user_id responds with a 404 error when passed a valid user_id that doesn`t exist', () => {
       return request
         .get('/api/users/507f191e810c19729de860ea')
         .expect(404)
@@ -127,6 +127,33 @@ describe('API', () => {
           expect(body.statusCode).to.equal(404);
           expect(body.error).to.equal('Not Found');
           expect(body.message).to.equal('User not found');
+        });
+    });
+  });
+
+  describe('Articles', () => {
+    it('GET /api/articles responds with all articles', () => {
+      return request
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.have.key('articles');
+          expect(body.articles).to.be.an('array');
+          const testArticle = body.articles[0];
+          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count');
+          expect(testArticle._id).to.equal(`${articleDocs[0]._id}`);
+          expect(testArticle.title).to.equal(articleDocs[0].title);
+          expect(testArticle.body).to.equal(articleDocs[0].body);
+          expect(testArticle.votes).to.equal(articleDocs[0].votes);
+          expect(testArticle.belongs_to).to.be.an('object');
+          expect(testArticle.belongs_to._id).to.equal(`${topicDocs[0]._id}`);
+          expect(testArticle.belongs_to.slug).to.equal(topicDocs[0].slug);
+          expect(testArticle.created_by).to.be.an('object');
+          expect(testArticle.created_by._id).to.equal(`${userDocs[0]._id}`);
+          expect(testArticle.created_by.name).to.equal(userDocs[0].name);
+          expect(testArticle.created_by.username).to.equal(userDocs[0].username);
+          expect(testArticle.created_by.avatar_url).to.equal(userDocs[0].avatar_url);
+          expect(testArticle.comment_count).to.equal(2);
         });
     });
   });
