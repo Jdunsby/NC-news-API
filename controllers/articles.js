@@ -1,23 +1,14 @@
 const { Article, Comment } = require('../models');
+const { addCommentCount } = require('../utils/api');
+
 
 const getArticles = (req, res, next) => {
   Article.find()
     .populate('belongs_to')
     .populate('created_by')
     .lean()
-    .then(articles => {
-      const commentCounts = articles.map(article => {
-        return Comment.find({belongs_to: article._id}).count();
-      });
-      return Promise.all([
-        articles,
-        ...commentCounts
-      ]);
-    })
-    .then(([articles, ...commentCounts]) => {
-      articles.forEach((article, i) => article.comment_count = commentCounts[i]);
-      res.status(200).send({ articles });
-    })
+    .then(articles => addCommentCount(articles, Comment))
+    .then(articles => res.status(200).send({ articles }))
     .catch(next);
 };
 
