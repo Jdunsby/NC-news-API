@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const apiRouter = require('./routes/api');
 const { DB_URL } = require('./config');
-const { handle400, handle404 } = require('./errors');
+const { handle400, handle404, handle500 } = require('./errors');
 
 mongoose.connect(DB_URL);
 
@@ -18,5 +18,6 @@ app.use('/api', apiRouter);
 //ERROR HANDLING
 app.use(handle400);
 app.use(handle404);
+app.use(handle500);
 
 module.exports = app;
