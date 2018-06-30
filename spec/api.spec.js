@@ -12,14 +12,13 @@ describe('API', () => {
   beforeEach(() => {
     return seedDB(testData)
       .then(docs => {
-        [ topicDocs, userDocs ] = docs;
+        [topicDocs, userDocs] = docs;
       })
       .catch(console.error);
   });
 
   after(() => mongoose.disconnect());
 
-  
   describe('Topics', () => {
     it('GET /api/topics responds with all topics', () => {
       return request
@@ -49,12 +48,12 @@ describe('API', () => {
           expect(body.topic.slug).to.equal(topicDocs[1].slug);
         });
     });
-    
+
     it('Error: GET /api/topics/:topic_id responds with a 400 error when request contains an invalid topic_id', () => {
       return request
         .get('/api/topics/something')
         .expect(400)
-        .then(({body}) => {
+        .then(({ body }) => {
           expect(body).to.have.all.keys('statusCode', 'error', 'message');
           expect(body.statusCode).to.equal(400);
           expect(body.error).to.equal('CastError');
@@ -75,7 +74,6 @@ describe('API', () => {
     });
   });
 
-
   describe('Users', () => {
     it('GET /api/users responds with all users', () => {
       return request
@@ -90,6 +88,45 @@ describe('API', () => {
           expect(testUser.name).to.equal(userDocs[0].name);
           expect(testUser.username).to.equal(userDocs[0].username);
           expect(testUser.avatar_url).to.equal(userDocs[0].avatar_url);
+        });
+    });
+
+    it('GET /api/users/:user_id responds with the specified user', () => {
+      return request
+        .get(`/api/users/${userDocs[1]._id}`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.have.key('user');
+          expect(body.user).to.be.an('object');
+          expect(body.user).to.include.all.keys('_id', 'name', 'username', 'avatar_url');
+          expect(body.user._id).to.equal(`${userDocs[1]._id}`);
+          expect(body.user.name).to.equal(userDocs[1].name);
+          expect(body.user.username).to.equal(userDocs[1].username);
+          expect(body.user.avatar_url).to.equal(userDocs[1].avatar_url);
+        });
+    });
+
+    it('Error: GET /api/users/:user_id responds with a 400 error when request contains an invalid user_id', () => {
+      return request
+        .get('/api/users/lupo')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('CastError');
+          expect(body.message).to.equal('Cast to ObjectId failed for value "lupo" at path "_id" for model "users"');
+        });
+    });
+
+    it('Error: GET /api/users/:user_id responds with a 404 error when passed a valid user id that doesn`t exist', () => {
+      return request
+        .get('/api/users/507f191e810c19729de860ea')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('User not found');
         });
     });
   });

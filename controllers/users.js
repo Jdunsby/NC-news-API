@@ -1,3 +1,4 @@
+const boom = require('boom');
 const { User } = require('../models');
 
 const getUsers = (re, res, next) => {
@@ -6,6 +7,17 @@ const getUsers = (re, res, next) => {
     .catch(next);
 };
 
+const getUserById = (req, res, next) => {
+  const { user_id } = req.params;
+  User.findById(user_id)
+    .then(user => {
+      if(!user) throw boom.notFound('User not found');
+      res.status(200).send({user});
+    })
+    .catch(next);
+};
+
 module.exports = {
-  getUsers
+  getUsers,
+  getUserById
 };

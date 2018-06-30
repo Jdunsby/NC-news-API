@@ -24,7 +24,6 @@ describe('seedDB()', () => {
     return mongoose.disconnect();
   });
 
-
   describe('Topics', () => {
     it('returns seeded topic data', () => {
       const testTopic = topicDocs[0].toObject();
@@ -37,7 +36,6 @@ describe('seedDB()', () => {
       expect(testTopic.slug).to.equal('mitch');
     });
   });
-
 
   describe('Users', () => {
     it('returns seeded user data', () => {
@@ -52,7 +50,6 @@ describe('seedDB()', () => {
       expect(testUser.avatar_url).to.equal('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg');
     });
   });
-
 
   describe('Articles', () => {
     it('returns seeded article data', () => {
@@ -70,7 +67,6 @@ describe('seedDB()', () => {
     });
   });
 
-  
   describe('Comments', () => {
     it('returns seeded comment data', () => {
       const testComment = commentDocs[0].toObject();

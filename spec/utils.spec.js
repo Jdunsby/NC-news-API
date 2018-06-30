@@ -143,7 +143,6 @@ describe('utils', () => {
     });
   });
 
-
   describe('addrefs()', () => {
     it('returns an empty array if the passed collction (2nd arg) is an empty array', () => {
       const topics = [{ slug: 'examples', _id: '507f1f77bcf86cd799439011' }];
