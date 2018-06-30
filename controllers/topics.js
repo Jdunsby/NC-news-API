@@ -1,3 +1,4 @@
+const boom = require('boom');
 const { Topic } = require('../models');
 
 const  getTopics = (req, res, next) => {
@@ -10,6 +11,7 @@ const getTopicById = (req, res, next) => {
   const { topic_id } = req.params;
   Topic.findById(topic_id)
     .then(topic => {
+      if(!topic) throw boom.notFound('Topic not found');
       res.status(200).send({topic});
     })
     .catch(next);
