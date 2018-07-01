@@ -23,9 +23,9 @@ const getArticleById = (req, res, next) => {
     .lean()
     .then(article => {
       if(!article) throw notFound('Article not found');
-      return addCommentCount(article);
+      return addCommentCount([article]);
     })
-    .then(article => res.status(200).send({ article }))
+    .then(([article]) => res.status(200).send({ article }))
     .catch(next);
 };
 
