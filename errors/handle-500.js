@@ -1,6 +1,8 @@
-const handle500 = (error, req, res) => {
-  console.error('>>>>>' , error, '<<<<<');
-  const defaultError = { type: 'Internal server error', message: error.message};
+const { internal } = require('boom');
+
+const handle500 = (err, req, res) => {
+  console.error('>>>>>', err, '<<<<<');
+  const defaultError = internal(err.message);
   res.status(500).send({error: defaultError});
 };
 
