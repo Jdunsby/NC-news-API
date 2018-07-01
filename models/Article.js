@@ -9,7 +9,8 @@ const ArticleSchema = new Schema({
   },
   body: {
     type: String,
-    requied: true
+    required: true,
+    unique: true
   },
   votes: {
     type: Number,
