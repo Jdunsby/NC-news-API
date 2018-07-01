@@ -27,6 +27,7 @@ describe('API', () => {
         .then(({ body }) => {
           expect(body).to.have.key('topics');
           expect(body.topics).to.be.an('array');
+          expect(body.topics).to.have.lengthOf(topicDocs.length);
           const testTopic = body.topics[0];
           expect(testTopic).to.include.all.keys('_id', 'title', 'slug');
           expect(testTopic._id).to.equal(`${topicDocs[0]._id}`);
@@ -82,6 +83,7 @@ describe('API', () => {
         .then(({ body }) => {
           expect(body).to.have.key('users');
           expect(body.users).to.be.an('array');
+          expect(body.users).to.have.lengthOf(userDocs.length);
           const testUser = body.users[0];
           expect(testUser).to.include.all.keys('_id', 'name', 'username', 'avatar_url');
           expect(testUser._id).to.equal(`${userDocs[0]._id}`);
@@ -139,6 +141,7 @@ describe('API', () => {
         .then(({ body }) => {
           expect(body).to.have.key('articles');
           expect(body.articles).to.be.an('array');
+          expect(body.articles).to.have.lengthOf(articleDocs.length);
           const testArticle = body.articles[0];
           expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count');
           expect(testArticle._id).to.equal(`${articleDocs[0]._id}`);
@@ -202,6 +205,56 @@ describe('API', () => {
           expect(body.statusCode).to.equal(404);
           expect(body.error).to.equal('Not Found');
           expect(body.message).to.equal('Article not found');
+        });
+    });
+
+    it('GET /api/topics/:topic_id/articles responds with articles belonging to the specified topic', () => {
+      return request
+        .get(`/api/topics/${topicDocs[1]._id}/articles`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.have.key('articles');
+          expect(body.articles).to.be.an('array');
+          expect(body.articles).to.have.lengthOf(2);
+          const testArticle = body.articles[0];
+          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count');
+          expect(testArticle._id).to.equal(`${articleDocs[2]._id}`);
+          expect(testArticle.title).to.equal(articleDocs[2].title);
+          expect(testArticle.body).to.equal(articleDocs[2].body);
+          expect(testArticle.votes).to.equal(articleDocs[2].votes);
+          expect(testArticle.belongs_to).to.be.an('object');
+          expect(testArticle.belongs_to._id).to.equal(`${topicDocs[1]._id}`);
+          expect(testArticle.belongs_to.slug).to.equal(topicDocs[1].slug);
+          expect(testArticle.created_by).to.be.an('object');
+          expect(testArticle.created_by._id).to.equal(`${userDocs[0]._id}`);
+          expect(testArticle.created_by.name).to.equal(userDocs[0].name);
+          expect(testArticle.created_by.username).to.equal(userDocs[0].username);
+          expect(testArticle.created_by.avatar_url).to.equal(userDocs[0].avatar_url);
+          expect(testArticle.comment_count).to.equal(2);
+        });
+    });
+
+    it('Error: GET /api/topics/:topic_id/articles responds with a 400 error when request contains an invalid topic_id', () => {
+      return request
+        .get('/api/topics/passat/articles')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('CastError');
+          expect(body.message).to.equal('Cast to ObjectId failed for value "passat" at path "belongs_to" for model "articles"');
+        });
+    });
+
+    it('Error: GET /api/topics/:topic_id/articles responds with a 404 error when passed a valid topic_id that doesn`t exist', () => {
+      return request
+        .get('/api/topics/507f191e810c19729de860ea/articles')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('Articles not found for topic: 507f191e810c19729de860ea');
         });
     });
   });

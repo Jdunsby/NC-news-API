@@ -28,9 +28,19 @@ const getArticleById = (req, res, next) => {
     .catch(next);
 };
 
-// const getArticlesByTopicId = (req, res, next) => {
-  
-// };
+const getArticlesByTopicId = (req, res, next) => {
+  const { topic_id } = req.params;
+  Article.find({ belongs_to: topic_id })
+    .populate('belongs_to')
+    .populate('created_by')
+    .lean()
+    .then(articles => {
+      if(!articles || !articles.length) throw notFound(`Articles not found for topic: ${topic_id}`);
+      return addCommentCount(articles, Comment);
+    })
+    .then(articles => res.status(200).send({ articles }))
+    .catch(next);
+};
 
 // const postArticle = (req, res, next) => {
 
@@ -47,7 +57,7 @@ const getArticleById = (req, res, next) => {
 module.exports = {
   getArticles,
   getArticleById,
-  // getArticlesByTopicId,
+  getArticlesByTopicId,
   // postArticle,
   // voteOnArticle,
   // deleteArticle
