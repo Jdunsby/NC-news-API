@@ -392,4 +392,45 @@ describe('API - ARTICLES', () => {
         });
     });
   });
+
+  describe('DELETE /api/articles/:article_id', () => {
+    it('responds with status 204 and deletes the specified article', () => {
+      return request
+        .delete(`/api/articles/${articleDocs[0]._id}`)
+        .expect(204)
+        .then(() => {
+          return request.get(`/api/articles/${articleDocs[0]._id}`);
+        })
+        .then(({body}) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('Article not found');
+        });
+    });
+
+    it('Error: responds with a 400 error when request contains an invalid article_id', () => {
+      return request
+        .get('/api/articles/touran')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('CastError');
+          expect(body.message).to.equal('Cast to ObjectId failed for value "touran" at path "_id" for model "articles"');
+        });
+    });
+
+    it('Error: responds with a 404 error when passed a valid article_id that doesn`t exist', () => {
+      return request
+        .get('/api/articles/507f191e810c19729de860ea')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('Article not found');
+        });
+    });
+  });
 });

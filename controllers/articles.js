@@ -93,9 +93,12 @@ const voteOnArticle = (req, res, next) => {
 };
 
 
-// const deleteArticle = (req, res, next) =>  {
-
-// };
+const deleteArticle = (req, res, next) =>  {
+  const { article_id } = req.params;
+  Article.findByIdAndRemove(article_id)
+    .then(() => res.status(204).send({}))
+    .catch(next);
+};
 
 module.exports = {
   getArticles,
@@ -103,5 +106,5 @@ module.exports = {
   getArticlesByTopicId,
   postArticle,
   voteOnArticle,
-  // deleteArticle
+  deleteArticle
 };
