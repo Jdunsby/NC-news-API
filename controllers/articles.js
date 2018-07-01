@@ -29,6 +29,7 @@ const getArticleById = (req, res, next) => {
     .catch(next);
 };
 
+
 const getArticlesByTopicId = (req, res, next) => {
   const { topic_id } = req.params;
   Article.find({ belongs_to: topic_id })
@@ -42,6 +43,7 @@ const getArticlesByTopicId = (req, res, next) => {
     .then(articles => res.status(200).send({ articles }))
     .catch(next);
 };
+
 
 const postArticle = (req, res, next) => {
   const { topic_id } = req.params;
@@ -74,9 +76,22 @@ const postArticle = (req, res, next) => {
     .catch(next);
 };
 
-// const voteOnArticle = (req, res, next) => {
 
-// };
+const voteOnArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  const { vote } = req.query;
+  const voteVal = vote === 'up' ? 1 : vote === 'down' ? -1 : 0;
+  if(!vote) {
+    throw badRequest('PUT request must include vote query with value \'up\' or \'down\'');
+  }
+  else if(!voteVal) {
+    throw badRequest(`Value '${vote}' for vote query is invalid. Use 'up' or 'down' instead`);
+  }
+  Article.findByIdAndUpdate(article_id, { $inc: { votes: voteVal } }, {new: true})
+    .then(article => res.status(200).send({ article }))
+    .catch(next);
+};
+
 
 // const deleteArticle = (req, res, next) =>  {
 
@@ -87,6 +102,6 @@ module.exports = {
   getArticleById,
   getArticlesByTopicId,
   postArticle,
-  // voteOnArticle,
+  voteOnArticle,
   // deleteArticle
 };

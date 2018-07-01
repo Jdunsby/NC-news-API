@@ -407,5 +407,116 @@ describe('API', () => {
           });
       });
     });
+
+    describe('PUT /api/articles/:article_id', () => {
+      it('increases the specified article`s vote property by 1 when vote query has the value `up`', () => {
+        return request
+          .put(`/api/articles/${articleDocs[0]._id}?vote=up`)
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.have.key('article');
+            expect(body.article).to.be.an('object');
+            expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by');
+            expect(body.article._id).to.equal(`${articleDocs[0]._id}`);
+            expect(body.article.title).to.equal(articleDocs[0].title);
+            expect(body.article.body).to.equal(articleDocs[0].body);
+            expect(body.article.votes).to.equal(articleDocs[0].votes + 1);
+            expect(body.article.belongs_to).to.equal(`${topicDocs[0]._id}`);
+            expect(body.article.created_by).to.equal(`${userDocs[0]._id}`);
+            return request.get(`/api/articles/${articleDocs[0]._id}`);
+          })
+          .then(({ body }) => {
+            expect(body).to.have.key('article');
+            expect(body.article).to.be.an('object');
+            expect(body.article).to.include.key('votes');
+            expect(body.article.votes).to.equal(articleDocs[0].votes + 1);
+          });
+      });
+
+      it('decreases the specified article`s vote property by 1 when vote query has the value `down`', () => {
+        return request
+          .put(`/api/articles/${articleDocs[0]._id}?vote=down`)
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.have.key('article');
+            expect(body.article).to.be.an('object');
+            expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by');
+            expect(body.article._id).to.equal(`${articleDocs[0]._id}`);
+            expect(body.article.title).to.equal(articleDocs[0].title);
+            expect(body.article.body).to.equal(articleDocs[0].body);
+            expect(body.article.votes).to.equal(articleDocs[0].votes - 1);
+            expect(body.article.belongs_to).to.equal(`${topicDocs[0]._id}`);
+            expect(body.article.created_by).to.equal(`${userDocs[0]._id}`);
+            return request.get(`/api/articles/${articleDocs[0]._id}`);
+          })
+          .then(({ body }) => {
+            expect(body).to.have.key('article');
+            expect(body.article).to.be.an('object');
+            expect(body.article).to.include.key('votes');
+            expect(body.article.votes).to.equal(articleDocs[0].votes - 1);
+          });
+      });
+
+      it('Error: responds with a 400 error when request query vote has an invalid value', () => {
+        return request
+          .put(`/api/articles/${articleDocs[0]._id}?vote=left`)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.have.all.keys('statusCode', 'error', 'message');
+            expect(body.statusCode).to.equal(400);
+            expect(body.error).to.equal('Bad Request');
+            expect(body.message).to.equal('Value \'left\' for vote query is invalid. Use \'up\' or \'down\' instead');
+          });
+      });
+      
+      it('Error: responds with a 400 error when request query isn`t vote but has a valid value', () => {
+        return request
+          .put(`/api/articles/${articleDocs[0]._id}?direction=up`)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.have.all.keys('statusCode', 'error', 'message');
+            expect(body.statusCode).to.equal(400);
+            expect(body.error).to.equal('Bad Request');
+            expect(body.message).to.equal('PUT request must include vote query with value \'up\' or \'down\'');
+          });
+      });
+      
+      it('Error: responds with a 400 error when request when request doesn`t include vote query', () => {
+        return request
+          .put(`/api/articles/${articleDocs[0]._id}`)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.have.all.keys('statusCode', 'error', 'message');
+            expect(body.statusCode).to.equal(400);
+            expect(body.error).to.equal('Bad Request');
+            expect(body.message).to.equal('PUT request must include vote query with value \'up\' or \'down\'');
+          });
+      });
+
+
+      it('Error: responds with a 400 error when request contains an invalid article_id', () => {
+        return request
+          .put('/api/articles/tiguan?vote=up')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.have.all.keys('statusCode', 'error', 'message');
+            expect(body.statusCode).to.equal(400);
+            expect(body.error).to.equal('CastError');
+            expect(body.message).to.equal('Cast to ObjectId failed for value "tiguan" at path "_id" for model "articles"');
+          });
+      });
+  
+      it('Error: responds with a 404 error when passed a valid article_id that doesn`t exist', () => {
+        return request
+          .get('/api/articles/507f191e810c19729de860ea?vote=down')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body).to.have.all.keys('statusCode', 'error', 'message');
+            expect(body.statusCode).to.equal(404);
+            expect(body.error).to.equal('Not Found');
+            expect(body.message).to.equal('Article not found');
+          });
+      });
+    });
   });
 });

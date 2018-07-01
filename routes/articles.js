@@ -1,7 +1,9 @@
 const router = require('express').Router();
-const { getArticles, getArticleById } = require('../controllers/articles');
+const { getArticles, getArticleById, voteOnArticle } = require('../controllers/articles');
 
 router.get('/', getArticles);
-router.get('/:article_id', getArticleById);
+router.route('/:article_id')
+  .get(getArticleById)
+  .put(voteOnArticle);
 
 module.exports = router;
