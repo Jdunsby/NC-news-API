@@ -1,4 +1,6 @@
-const addCommentCount = (articles, Comment) => {
+const { Comment } = require('../models');
+
+const addCommentCount = (articles) => {
   const articleIsObject = articles.constructor === Object;
   if(articleIsObject) articles = [articles];
   const commentCounts = articles.map(article => {
