@@ -1,3 +1,4 @@
+const { notFound } = require('boom');
 const { Article, Comment } = require('../models');
 const { addCommentCount } = require('../utils/api');
 
@@ -12,9 +13,20 @@ const getArticles = (req, res, next) => {
     .catch(next);
 };
 
-// const getArticleById = (req, res, next) => {
 
-// };
+const getArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  Article.findById(article_id)
+    .populate('belongs_to')
+    .populate('created_by')
+    .lean()
+    .then(article => {
+      if(!article) throw notFound('Article not found');
+      return addCommentCount(article, Comment);
+    })
+    .then(article => res.status(200).send({ article }))
+    .catch(next);
+};
 
 // const getArticlesByTopicId = (req, res, next) => {
   
@@ -34,7 +46,7 @@ const getArticles = (req, res, next) => {
 
 module.exports = {
   getArticles,
-  // getArticleById,
+  getArticleById,
   // getArticlesByTopicId,
   // postArticle,
   // voteOnArticle,
