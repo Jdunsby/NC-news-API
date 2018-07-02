@@ -416,9 +416,7 @@ describe('API - ARTICLES', () => {
       return request
         .delete(`/api/articles/${articleDocs[0]._id}`)
         .expect(204)
-        .then(() => {
-          return request.get(`/api/articles/${articleDocs[0]._id}`);
-        })
+        .then(() => request.get(`/api/articles/${articleDocs[0]._id}`))
         .then(({body}) => {
           expect(body).to.have.all.keys('statusCode', 'error', 'message');
           expect(body.statusCode).to.equal(404);
