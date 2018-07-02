@@ -25,7 +25,7 @@ describe('API - ARTICLES', () => {
           expect(body).to.have.key('articles');
           expect(body.articles).to.be.an('array');
           expect(body.articles).to.have.lengthOf(articleDocs.length);
-          const testArticle = body.articles[0];
+          const [ testArticle ] = body.articles;
           expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count');
           expect(testArticle._id).to.equal(`${articleDocs[0]._id}`);
           expect(testArticle.title).to.equal(articleDocs[0].title);
