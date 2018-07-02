@@ -46,24 +46,24 @@ const getArticlesByTopicId = (req, res, next) => {
 
 
 const postArticle = (req, res, next) => {
-  const { topic_id } = req.params;
+  const { topic_id: belongs_to } = req.params;
   const { title, body, created_by } = req.body;
   if(!mongoose.Types.ObjectId.isValid(created_by)) {
     throw badRequest(`"created_by" value '${created_by}' is an invalid user ID`);
   }
 
   Promise.all([
-    Topic.findById(topic_id),
+    Topic.findById(belongs_to),
     User.findById(created_by)
   ])
     .then(([topic, user]) => {
-      if(!topic) throw notFound(`Topic with ID ${topic_id} does not exist`);
+      if(!topic) throw notFound(`Topic with ID ${belongs_to} does not exist`);
       if(!user) throw notFound(`User with ID ${created_by} does not exist`);
       const newArticle = new Article({
         title,
         body,
         created_by,
-        belongs_to: topic_id
+        belongs_to
       });
       return newArticle.save();
     })

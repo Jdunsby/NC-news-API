@@ -263,7 +263,7 @@ describe('API - ARTICLES', () => {
         });
     });
     
-    it('Error: responds with a 400 error when request body`s created_by property does not refer to an existing user', () => {
+    it('Error: responds with a 400 error when request body`s created_by property is an invalid mongo ID', () => {
       const newArticle = {
         title: 'The third of many API posts',
         body: 'Don`t forget to handle your errors!',
@@ -278,6 +278,24 @@ describe('API - ARTICLES', () => {
           expect(body.statusCode).to.equal(400);
           expect(body.error).to.equal('Bad Request');
           expect(body.message).to.equal('"created_by" value \'Elon Musk\' is an invalid user ID');
+        });
+    });
+
+    it('Error: responds with a 404 error when request body`s created_by property is a valid mongo ID but does not refer to an existing user', () => {
+      const newArticle = {
+        title: 'The third of many API posts',
+        body: 'Don`t forget to handle your errors!',
+        created_by: '507f191e810c19729de860ea'
+      };
+      return request
+        .post(`/api/topics/${topicDocs[0]._id}/articles`)
+        .send(newArticle)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('User with ID 507f191e810c19729de860ea does not exist');
         });
     });
   });
