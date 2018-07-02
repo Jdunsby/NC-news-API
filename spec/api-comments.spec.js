@@ -59,4 +59,131 @@ describe('API - COMMENTS', () => {
         });
     });
   });
+
+  describe('POST /api/articles/:article_id/comments', () => {
+    it('responds with the successfully posted comment', () => {
+      const newComment = {
+        body: 'Nice article!',
+        created_by: `${userDocs[0]._id}`
+      };
+      return request
+        .post(`/api/articles/${articleDocs[0]._id}/comments`)
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).to.have.key('comment');
+          expect(body.comment).to.be.an('object');
+          expect(body.comment).to.include.keys('_id', 'body', 'votes', 'created_at', 'belongs_to', 'created_by');
+          expect(body.comment.body).to.equal(newComment.body);
+          expect(body.comment.votes).to.equal(0);
+          expect(body.comment.belongs_to).to.equal(`${articleDocs[0]._id}`);
+          expect(body.comment.created_by).to.be.an('object');
+          expect(body.comment.created_by._id).to.equal(`${userDocs[0]._id}`);
+          expect(body.comment.created_by.name).to.equal(userDocs[0].name);
+          expect(body.comment.created_by.username).to.equal(userDocs[0].username);
+          expect(body.comment.created_by.avatar_url).to.equal(userDocs[0].avatar_url);
+        });
+    });
+
+    it('Error: responds with a 400 error when request contains an invalid topic_id', () => {
+      const newArticle = {
+        title: 'The second of many API posts',
+        body: 'Don`t forget to handle your errors!',
+        created_by: `${userDocs[0]._id}`
+      };
+      return request
+        .post('/api/articles/arteon/comments')
+        .send(newArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('CastError');
+          expect(body.message).to.equal('Cast to ObjectId failed for value "arteon" at path "_id" for model "articles"');
+        });
+    });
+
+    it('Error: responds with a 404 error when passed a valid topic_id that doesn`t exist', () => {
+      const newComment = {
+        body: 'Nice article!',
+        created_by: `${userDocs[0]._id}`
+      };
+      return request
+        .post('/api/articles/507f191e810c19729de860ea/comments')
+        .send(newComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('Article with ID 507f191e810c19729de860ea does not exist');
+        });
+    });
+    
+    it('Error: responds with a 400 error when request body has no body property', () => {
+      const newComment = {
+        created_by: `${userDocs[1]._id}`
+      };
+      return request
+        .post(`/api/articles/${articleDocs[1]._id}/comments`)
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('ValidationError');
+          expect(body.message).to.equal('comments validation failed: body: Path `body` is required.');
+        });
+    });
+
+    it('Error: responds with a 400 error when request body has no created_by property', () => {
+      const newComment = {
+        body: 'Nice article!'
+      };
+      return request
+        .post(`/api/articles/${articleDocs[0]._id}/comments`)
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('Bad Request');
+          expect(body.message).to.equal('\'created_by\' value \'undefined\' is an invalid user ID');
+        });
+    });
+    
+    it('Error: responds with a 400 error when request body`s created_by property is not a vaid mongo ID', () => {
+      const newComment = {
+        body: 'Be water my friend.',
+        created_by: 'Bruce Lee'
+      };
+      return request
+        .post(`/api/articles/${articleDocs[0]._id}/comments`)
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('Bad Request');
+          expect(body.message).to.equal('\'created_by\' value \'Bruce Lee\' is an invalid user ID');
+        });
+    });
+
+    it('Error: responds with a 404 error when request body`s created_by property is a valid mongo ID but does not refer to an existing user', () => {
+      const newComment = {
+        body: 'Be water my friend.',
+        created_by: '507f191e810c19729de860ea'
+      };
+      return request
+        .post(`/api/articles/${articleDocs[0]._id}/comments`)
+        .send(newComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('User with ID 507f191e810c19729de860ea does not exist');
+        });
+    });
+  });
 });

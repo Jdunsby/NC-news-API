@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { getArticles, getArticleById, voteOnArticle, deleteArticle } = require('../controllers/articles');
-const { getCommentsByArticleId } = require('../controllers/comments');
+const { getCommentsByArticleId, postComment } = require('../controllers/comments');
 
 router.get('/', getArticles);
 
@@ -10,6 +10,7 @@ router.route('/:article_id')
   .delete(deleteArticle);
 
 router.route('/:article_id/comments')
-  .get(getCommentsByArticleId);
+  .get(getCommentsByArticleId)
+  .post(postComment);
 
 module.exports = router;
