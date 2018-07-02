@@ -5,12 +5,10 @@ const ArticleSchema = new Schema({
   title: {
     type: String,
     required: true,
-    unique: true
   },
   body: {
     type: String,
     required: true,
-    unique: true
   },
   votes: {
     type: Number,

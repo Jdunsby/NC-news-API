@@ -9,4 +9,4 @@ mongoose.connect(DB_URL)
     console.log('DB seeded successfully');
     mongoose.disconnect();
   })
-  .catch();
+  .catch(console.error);
