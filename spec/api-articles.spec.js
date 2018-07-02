@@ -400,7 +400,7 @@ describe('API - ARTICLES', () => {
 
     it('Error: responds with a 404 error when passed a valid article_id that doesn`t exist', () => {
       return request
-        .get('/api/articles/507f191e810c19729de860ea?vote=down')
+        .put('/api/articles/507f191e810c19729de860ea?vote=down')
         .expect(404)
         .then(({ body }) => {
           expect(body).to.have.all.keys('statusCode', 'error', 'message');

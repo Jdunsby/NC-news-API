@@ -88,7 +88,10 @@ const voteOnArticle = (req, res, next) => {
     throw badRequest(`Value '${vote}' for vote query is invalid. Use 'up' or 'down' instead`);
   }
   Article.findByIdAndUpdate(article_id, { $inc: { votes: voteVal } }, {new: true})
-    .then(article => res.status(200).send({ article }))
+    .then(article => {
+      if(!article) throw notFound('Article not found');
+      res.status(200).send({ article });
+    })
     .catch(next);
 };
 
