@@ -301,4 +301,36 @@ describe('API - COMMENTS', () => {
         });
     });
   });
+
+  describe('DELETE /api/comments/:comment_id', () => {
+    it('responds with status 204 and deletes the specified comment', () => {
+      return request
+        .delete(`/api/comments/${commentDocs[0]._id}`)
+        .expect(204);
+    });
+
+    it('Error: responds with a 400 error when request contains an invalid article_id', () => {
+      return request
+        .delete('/api/comments/apollo')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('CastError');
+          expect(body.message).to.equal('Cast to ObjectId failed for value "apollo" at path "_id" for model "comments"');
+        });
+    });
+
+    it('Error: responds with a 404 error when passed a valid comment_id that doesn`t exist', () => {
+      return request
+        .delete('/api/comments/507f191e810c19729de860ea')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('Comment not found');
+        });
+    });
+  });
 });

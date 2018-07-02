@@ -62,14 +62,20 @@ const voteOnComment = (req, res, next) => {
 };
 
 
-// const deleteComment = (req, res, next) => {
-
-// };
+const deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  Comment.findByIdAndRemove(comment_id)
+    .then(comment => {
+      if(!comment) throw notFound('Comment not found');
+      res.status(204).send({});
+    })
+    .catch(next);
+};
 
 
 module.exports = {
   getCommentsByArticleId,
   postComment,
   voteOnComment,
-  // deleteComment
+  deleteComment
 };
