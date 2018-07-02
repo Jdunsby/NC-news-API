@@ -3,27 +3,26 @@ process.env.NODE_ENV = 'test';
 const mongoose = require('mongoose');
 const { expect } = require('chai');
 const { DB_URL } = require('../config');
-const seedDb = require('../db/seed/seed');
+const seedDB = require('../db/seed/seed');
 const seedData = require('../db/seed/testData');
 
 
-describe('seedDb()', () => {
+describe('seedDB()', () => {
   let topicDocs, userDocs, articleDocs, commentDocs;
   before(() => {
     return mongoose.connect(DB_URL)
       .then(() => {
-        return seedDb(seedData);
+        return seedDB(seedData);
       })
       .then(testData => {
         [topicDocs, userDocs, articleDocs, commentDocs] = testData;
       })
       .catch(console.error);
   });
-
+  
   after(() => {
     return mongoose.disconnect();
   });
-
 
   describe('Topics', () => {
     it('returns seeded topic data', () => {
@@ -38,7 +37,6 @@ describe('seedDb()', () => {
     });
   });
 
-
   describe('Users', () => {
     it('returns seeded user data', () => {
       const testUser = userDocs[0].toObject();
@@ -52,7 +50,6 @@ describe('seedDb()', () => {
       expect(testUser.avatar_url).to.equal('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg');
     });
   });
-
 
   describe('Articles', () => {
     it('returns seeded article data', () => {
@@ -70,7 +67,6 @@ describe('seedDb()', () => {
     });
   });
 
-  
   describe('Comments', () => {
     it('returns seeded comment data', () => {
       const testComment = commentDocs[0].toObject();

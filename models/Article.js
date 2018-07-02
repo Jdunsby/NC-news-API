@@ -4,11 +4,11 @@ const { Schema } = mongoose;
 const ArticleSchema = new Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   body: {
     type: String,
-    requied: true
+    required: true,
   },
   votes: {
     type: Number,

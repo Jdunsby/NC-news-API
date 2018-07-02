@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Topic, User, Article, Comment } = require('../../models');
 const { createRef, addRefs } = require('../../utils/seeding');
 
-const seedDb = ({ topicData, userData, articleData, commentData }) => {
+const seedDB = ({ topicData, userData, articleData, commentData }) => {
   return mongoose.connection.dropDatabase()
     .then(() => {
       return Promise.all([
@@ -35,4 +35,4 @@ const seedDb = ({ topicData, userData, articleData, commentData }) => {
     });
 };
 
-module.exports = seedDb;
+module.exports = seedDB;
