@@ -186,4 +186,119 @@ describe('API - COMMENTS', () => {
         });
     });
   });
+
+  describe('PUT /api/comments/:article_id', () => {
+    it('increases the specified comment`s vote property by 1 when vote query has the value `up`', () => {
+      return request
+        .put(`/api/comments/${commentDocs[0]._id}?vote=up`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.have.key('comment');
+          expect(body.comment).to.be.an('object');
+          expect(body.comment).to.include.all.keys('_id', 'body', 'votes', 'created_at', 'belongs_to', 'created_by');
+          expect(body.comment._id).to.equal(`${commentDocs[0]._id}`);
+          expect(body.comment.title).to.equal(commentDocs[0].title);
+          expect(body.comment.body).to.equal(commentDocs[0].body);
+          expect(body.comment.votes).to.equal(commentDocs[0].votes + 1);
+          expect(body.comment.belongs_to).to.equal(`${articleDocs[0]._id}`);
+          expect(body.comment.created_by).to.equal(`${userDocs[1]._id}`);
+          return request.get(`/api/articles/${articleDocs[0]._id}/comments`);
+        })
+        .then(({ body }) => {
+          expect(body).to.have.key('comments');
+          expect(body.comments).to.be.an('array');
+          const testComment = body.comments[0];
+          expect(testComment).to.be.an('object');
+          expect(testComment).to.include.key('votes');
+          expect(testComment.votes).to.equal(commentDocs[0].votes + 1);
+        });
+    });
+
+    it('decreases the specified comment`s vote property by 1 when vote query has the value `down`', () => {
+      return request
+        .put(`/api/comments/${commentDocs[0]._id}?vote=down`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.have.key('comment');
+          expect(body.comment).to.be.an('object');
+          expect(body.comment).to.include.all.keys('_id', 'body', 'votes', 'created_at', 'belongs_to', 'created_by');
+          expect(body.comment._id).to.equal(`${commentDocs[0]._id}`);
+          expect(body.comment.title).to.equal(commentDocs[0].title);
+          expect(body.comment.body).to.equal(commentDocs[0].body);
+          expect(body.comment.votes).to.equal(commentDocs[0].votes - 1);
+          expect(body.comment.belongs_to).to.equal(`${articleDocs[0]._id}`);
+          expect(body.comment.created_by).to.equal(`${userDocs[1]._id}`);
+          return request.get(`/api/articles/${articleDocs[0]._id}/comments`);
+        })
+        .then(({ body }) => {
+          expect(body).to.have.key('comments');
+          expect(body.comments).to.be.an('array');
+          const testComment = body.comments[0];
+          expect(testComment).to.be.an('object');
+          expect(testComment).to.include.key('votes');
+          expect(testComment.votes).to.equal(commentDocs[0].votes - 1);
+        });
+    });
+
+    it('Error: responds with a 400 error when request query vote has an invalid value', () => {
+      return request
+        .put(`/api/comments/${commentDocs[0]._id}?vote=left`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('Bad Request');
+          expect(body.message).to.equal('Value \'left\' for vote query is invalid. Use \'up\' or \'down\' instead');
+        });
+    });
+    
+    it('Error: responds with a 400 error when request query isn`t vote but has a valid value', () => {
+      return request
+        .put(`/api/comments/${articleDocs[0]._id}?direction=up`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('Bad Request');
+          expect(body.message).to.equal('PUT request must include vote query with value \'up\' or \'down\'');
+        });
+    });
+    
+    it('Error: responds with a 400 error when request when request doesn`t include vote query', () => {
+      return request
+        .put(`/api/comments/${articleDocs[0]._id}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('Bad Request');
+          expect(body.message).to.equal('PUT request must include vote query with value \'up\' or \'down\'');
+        });
+    });
+
+
+    it('Error: responds with a 400 error when request contains an invalid comment_id', () => {
+      return request
+        .put('/api/comments/up!?vote=up')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(400);
+          expect(body.error).to.equal('CastError');
+          expect(body.message).to.equal('Cast to ObjectId failed for value "up!" at path "_id" for model "comments"');
+        });
+    });
+
+    it('Error: responds with a 404 error when passed a valid comment_id that doesn`t exist', () => {
+      return request
+        .put('/api/comments/507f191e810c19729de860ea?vote=down')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('Comment not found');
+        });
+    });
+  });
 });

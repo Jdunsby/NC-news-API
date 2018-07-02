@@ -43,9 +43,23 @@ const postComment = (req, res, next) => {
 };
 
 
-// const voteOnComment = (req, res, next) => {
-
-// };
+const voteOnComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { vote } = req.query;
+  const voteVal = vote === 'up' ? 1 : vote === 'down' ? -1 : 0;
+  if(!vote) {
+    throw badRequest('PUT request must include vote query with value \'up\' or \'down\'');
+  }
+  else if(!voteVal) {
+    throw badRequest(`Value '${vote}' for vote query is invalid. Use 'up' or 'down' instead`);
+  }
+  Comment.findByIdAndUpdate(comment_id, { $inc: { votes: voteVal } }, {new: true})
+    .then(comment => {
+      if(!comment) throw notFound('Comment not found');
+      res.status(200).send({ comment });
+    })
+    .catch(next);
+};
 
 
 // const deleteComment = (req, res, next) => {
@@ -56,6 +70,6 @@ const postComment = (req, res, next) => {
 module.exports = {
   getCommentsByArticleId,
   postComment,
-  // voteOnComment,
+  voteOnComment,
   // deleteComment
 };
