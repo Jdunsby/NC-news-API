@@ -14,7 +14,7 @@ const config = {
     PORT: 9090,
   },
   production: {
-    DB_URL: ''
+    DB_URL: '' //<<-- Replace this string with the url of your hosted database
   }
 };
 
