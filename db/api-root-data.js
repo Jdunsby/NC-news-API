@@ -1,7 +1,7 @@
 const API_URL = process.env.API_URL || require('../config').API_URL;
 const apiRootData = {
-  'home': `${API_URL}`,
-  'api_root': `${API_URL}/api`,
+  'Home': `${API_URL}`,
+  'API_root': `${API_URL}/api`,
   'GET_topics': `${API_URL}/api/topics`,
   'GET_topic_by_id': `${API_URL}/api/topics/{topic_id}`,
   'GET_articles_by_topic_id': `${API_URL}/api/topics/{topic_id}/articles`,
