@@ -1,5 +1,7 @@
 # NC-News-API
-[Northcoders News](https://jd-nc-news.herokuapp.com/api) is a simple, easy to navigate, RESTful API built for serving article themed data. The data is split into 4 categories: `Topics`, `Articles`, `Comments`, `Users`.
+[Northcoders News](https://jd-nc-news.herokuapp.com/api) is a simple, easy to navigate, RESTful API built for serving article themed data for use with a front-end application. The data is split into 4 categories: `Topics`, `Articles`, `Comments`, `Users` and is interfacable through various CRUD operations.
+
+See the deployed version [here](https://jd-nc-news.herokuapp.com/api)
 
 ## Getting Started
 ### Prerequisites
@@ -45,6 +47,7 @@ npm test
 
 ## Deployment
 This project uses [Mlab](https://mlab.com/) to host the database and [Heroku](https://www.heroku.com/) for hosting the app itself.
+
 
 If you wish to host your own version of this project you will need to add your database URL to the config file. A useful comment has been placed in the generated config file to show you where to put this.
 Once you have done this you can run the following command to seed your production database:
