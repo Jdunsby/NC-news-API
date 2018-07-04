@@ -9,7 +9,8 @@
     "dev": "nodemon index.js",
     "start": "node index.js",
     "seed:dev": "node db/seed/run-seed.js",
-    "precommit": "npm t"
+    "precommit": "npm t",
+    "generate-config": "CREATE_CONFIG=true node ./utils/generate-config.js"
   },
   "repository": {
     "type": "git",
