@@ -4,12 +4,12 @@ const app = require('../app');
 const request = require('supertest')(app);
 const { expect } = require('chai');
 const seedDB = require('../db/seed/seed');
-const testData = require('../db/seed/testData');
+const { userData, topicData, articleData, commentData } = require('../db/seed/testData');
 
 describe('API - TOPICS', () => {
   let topicDocs;
   beforeEach(() => {
-    return seedDB(testData)
+    return seedDB(userData, topicData, articleData, commentData)
       .then(docs => {
         [ topicDocs ] = docs;
       })
