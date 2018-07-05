@@ -20,7 +20,6 @@ const addRefs = (ref, collection, replaceKey) => {
   });
 };
 
-
 module.exports = {
   createRef,
   addRefs

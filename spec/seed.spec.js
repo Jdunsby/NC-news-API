@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { expect } = require('chai');
 const { DB_URL } = require('../config');
 const seedDB = require('../db/seed/seed');
-const seedData = require('../db/seed/testData');
+const { userData, topicData, articleData, commentData } = require('../db/seed/testData');
 
 
 describe('seedDB()', () => {
@@ -12,7 +12,7 @@ describe('seedDB()', () => {
   before(() => {
     return mongoose.connect(DB_URL)
       .then(() => {
-        return seedDB(seedData);
+        return seedDB(userData, topicData, articleData, commentData);
       })
       .then(testData => {
         [topicDocs, userDocs, articleDocs, commentDocs] = testData;
