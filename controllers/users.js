@@ -1,20 +1,16 @@
 const { notFound } = require('boom');
 const { User } = require('../models');
 
-const getUsers = (re, res, next) => {
-  User.find()
-    .then(users => res.status(200).send({users}))
-    .catch(next);
+const getUsers = async (_, res) => {
+  const users = await User.find();
+  res.status(200).send({users});
 };
 
-const getUserById = (req, res, next) => {
+const getUserById = async (req, res) => {
   const { user_id } = req.params;
-  User.findById(user_id)
-    .then(user => {
-      if(!user) throw notFound('User not found');
-      res.status(200).send({user});
-    })
-    .catch(next);
+  const user = await User.findById(user_id);
+  if(!user) throw notFound('User not found');
+  res.status(200).send({user});
 };
 
 module.exports = {
