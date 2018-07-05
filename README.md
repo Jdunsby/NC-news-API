@@ -28,7 +28,7 @@ This will install all dependencies listed in package.json.
 The project also requires a specific config file in order to connect to and seed the database as well as insert API links into some of the responses.
 Type the following command to generate a config file:
 ```
-npm run create-config
+npm run generate-config
 ```
 This will create a `config.js` file that includes everything the project needs to run in 'dev' or 'test' environments.
 
@@ -50,9 +50,9 @@ This project uses [Mlab](https://mlab.com/) to host the database and [Heroku](ht
 
 
 If you wish to host your own version of this project you will need to add your database URL to the config file. A useful comment has been placed in the generated config file to show you where to put this.
-Once you have done this you can run the following command to seed your production database:
+Once you have done this navigate to the project's root folder and run the following command to seed your production database:
 ```
-npm run seed:prod
+NODE_ENV=production node db/seed/run-seed.js
 ```
 
 ## Built With
