@@ -1,7 +1,7 @@
 const { notFound } = require('boom');
 const { User } = require('../models');
 
-const getUsers = async (_, res) => {
+const getUsers = async (req, res) => {
   const users = await User.find();
   res.status(200).send({users});
 };

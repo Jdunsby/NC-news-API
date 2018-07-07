@@ -4,7 +4,7 @@ const { Article, Topic, User } = require('../models');
 const { addCommentCount } = require('../utils/api');
 
 
-const getArticles = async (_, res) => {
+const getArticles = async (req, res) => {
   let articles = await Article.find()
     .populate('belongs_to')
     .populate('created_by')
