@@ -5,12 +5,12 @@ const request = require('supertest')(app);
 const mongoose = require('mongoose');
 const { expect } = require('chai');
 const seedDB = require('../db/seed/seed');
-const testData = require('../db/seed/testData');
+const { userData, topicData, articleData, commentData } = require('../db/seed/testData');
 
 describe('API - USERS', () => {
   let userDocs;
   beforeEach(() => {
-    return seedDB(testData)
+    return seedDB(userData, topicData, articleData, commentData)
       .then(docs => {
         userDocs = docs[1];
       })

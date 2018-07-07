@@ -1,5 +1,7 @@
 # NC-News-API
-[Northcoders News](https://jd-nc-news.herokuapp.com/api) is a simple, easy to navigate, RESTful API built for serving article themed data. The data is split into 4 categories: `Topics`, `Articles`, `Comments`, `Users`.
+[Northcoders News](https://jd-nc-news.herokuapp.com/api) is a simple, easy to navigate, RESTful API built for serving article themed data for use with a front-end application. The data is split into 4 categories: `Topics`, `Articles`, `Comments`, `Users` and is interfacable through various CRUD operations.
+
+See the deployed version [here](https://jd-nc-news.herokuapp.com/api)
 
 ## Getting Started
 ### Prerequisites
@@ -26,7 +28,7 @@ This will install all dependencies listed in package.json.
 The project also requires a specific config file in order to connect to and seed the database as well as insert API links into some of the responses.
 Type the following command to generate a config file:
 ```
-npm run create-config
+npm run generate-config
 ```
 This will create a `config.js` file that includes everything the project needs to run in 'dev' or 'test' environments.
 
@@ -46,11 +48,13 @@ npm test
 ## Deployment
 This project uses [Mlab](https://mlab.com/) to host the database and [Heroku](https://www.heroku.com/) for hosting the app itself.
 
+
 If you wish to host your own version of this project you will need to add your database URL to the config file. A useful comment has been placed in the generated config file to show you where to put this.
-Once you have done this you can run the following command to seed your production database:
+Once you have done this navigate to the project's root folder and run the following command to seed your production database:
 ```
-npm run seed:prod
+NODE_ENV=production node db/seed/run-seed.js
 ```
+The app has also been set up to give priority to environment variable such as `DB_URL`, `API_URL` and `PORT` should they be present.
 
 ## Built With
 This Application was built using the following versions:
