@@ -1,20 +1,16 @@
 const { notFound } = require('boom');
 const { Topic } = require('../models');
 
-const getTopics = (req, res, next) => {
-  Topic.find()
-    .then(topics => res.status(200).send({topics}))
-    .catch(next);
+const getTopics = async (req, res) => {
+  const topics = await Topic.find();
+  res.status(200).send({ topics });
 };
 
-const getTopicById = (req, res, next) => {
+const getTopicById = async (req, res) => {
   const { topic_id } = req.params;
-  Topic.findById(topic_id)
-    .then(topic => {
-      if(!topic) throw notFound('Topic not found');
-      res.status(200).send({topic});
-    })
-    .catch(next);
+  const topic = await Topic.findById(topic_id);
+  if(!topic) throw notFound('Topic not found');
+  res.status(200).send({ topic });
 };
 
 module.exports = {

@@ -1,16 +1,17 @@
 const router = require('express').Router();
 const { getArticles, getArticleById, voteOnArticle, deleteArticle } = require('../controllers/articles');
 const { getCommentsByArticleId, postComment } = require('../controllers/comments');
+const { withErrorHandling } = require('../utils/api');
 
-router.get('/', getArticles);
+router.get('/', withErrorHandling(getArticles));
 
 router.route('/:article_id')
-  .get(getArticleById)
-  .put(voteOnArticle)
-  .delete(deleteArticle);
+  .get(withErrorHandling(getArticleById))
+  .put(withErrorHandling(voteOnArticle))
+  .delete(withErrorHandling(deleteArticle));
 
 router.route('/:article_id/comments')
-  .get(getCommentsByArticleId)
-  .post(postComment);
+  .get(withErrorHandling(getCommentsByArticleId))
+  .post(withErrorHandling(postComment));
 
 module.exports = router;
