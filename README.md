@@ -54,6 +54,7 @@ Once you have done this navigate to the project's root folder and run the follow
 ```
 NODE_ENV=production node db/seed/run-seed.js
 ```
+The app has also been set up to give priority to environment variable such as `DB_URL`, `API_URL` and `PORT` should they be present.
 
 ## Built With
 This Application was built using the following versions:
