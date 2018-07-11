@@ -31,8 +31,11 @@ describe('API - COMMENTS', () => {
           expect(testComment.body).to.equal(commentDocs[0].body);
           expect(testComment.votes).to.equal(commentDocs[0].votes);
           expect(`${testComment.belongs_to}`).to.equal(`${articleDocs[0]._id}`);
-          expect(`${testComment.created_by}`).to.equal(`${userDocs[1]._id}`);
-        });
+          expect(testComment.created_by).to.be.an('object');
+          expect(testComment.created_by._id).to.equal(`${userDocs[1]._id}`);
+          expect(testComment.created_by.name).to.equal(userDocs[1].name);
+          expect(testComment.created_by.username).to.equal(userDocs[1].username);
+          expect(testComment.created_by.avatar_url).to.equal(userDocs[1].avatar_url);        });
     });
 
     it('Error: responds with a 400 error when request contains an invalid article_id', () => {
