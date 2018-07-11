@@ -1,5 +1,5 @@
 [
-  { "title": "Coding", "slug": "coding" },
-  { "title": "Football", "slug": "football" },
-  { "title": "Cooking", "slug": "cooking" }
+  { "title": "Coding", "slug": "coding", "fa_icon": "code" },
+  { "title": "Football", "slug": "football", "fa_icon": "futbol" },
+  { "title": "Cooking", "slug": "cooking", "fa_icon": "utensils" }
 ]

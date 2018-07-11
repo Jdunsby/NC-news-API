@@ -11,6 +11,10 @@ const TopicSchema = new Schema({
     lowercase: true,
     required: true,
     unique: true
+  },
+  fa_icon: {
+    type: String,
+    required: true
   }
 });
 

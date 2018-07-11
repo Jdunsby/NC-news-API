@@ -4,7 +4,7 @@ const app = require('../app');
 const request = require('supertest')(app);
 const { expect } = require('chai');
 const seedDB = require('../db/seed/seed');
-const { userData, topicData, articleData, commentData } = require('../db/seed/testData');
+const { topicData, userData, articleData, commentData } = require('../db/seed/testData');
 
 describe('API - ARTICLES', () => {
   let topicDocs, userDocs, articleDocs;
@@ -26,14 +26,16 @@ describe('API - ARTICLES', () => {
           expect(body.articles).to.be.an('array');
           expect(body.articles).to.have.lengthOf(articleDocs.length);
           const [ testArticle ] = body.articles;
-          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count');
+          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
           expect(testArticle._id).to.equal(`${articleDocs[0]._id}`);
           expect(testArticle.title).to.equal(articleDocs[0].title);
           expect(testArticle.body).to.equal(articleDocs[0].body);
           expect(testArticle.votes).to.equal(articleDocs[0].votes);
-          expect(testArticle.belongs_to).to.be.an('object');
-          expect(testArticle.belongs_to._id).to.equal(`${topicDocs[0]._id}`);
-          expect(testArticle.belongs_to.slug).to.equal(topicDocs[0].slug);
+          expect(testArticle.belongs_to).to.equal(topicDocs[0].slug);
+          expect(testArticle.topic).to.be.an('object');
+          expect(testArticle.topic._id).to.equal(`${topicDocs[0]._id}`);
+          expect(testArticle.topic.slug).to.equal(topicDocs[0].slug);
+          expect(testArticle.topic.fa_icon).to.equal(topicDocs[0].fa_icon);
           expect(testArticle.created_by).to.be.an('object');
           expect(testArticle.created_by._id).to.equal(`${userDocs[0]._id}`);
           expect(testArticle.created_by.name).to.equal(userDocs[0].name);
@@ -52,14 +54,15 @@ describe('API - ARTICLES', () => {
         .then(({ body }) => {
           expect(body).to.have.key('article');
           expect(body.article).to.be.an('object');
-          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count');
+          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
           expect(body.article._id).to.equal(`${articleDocs[0]._id}`);
           expect(body.article.title).to.equal(articleDocs[0].title);
           expect(body.article.body).to.equal(articleDocs[0].body);
           expect(body.article.votes).to.equal(articleDocs[0].votes);
-          expect(body.article.belongs_to).to.be.an('object');
-          expect(body.article.belongs_to._id).to.equal(`${topicDocs[0]._id}`);
-          expect(body.article.belongs_to.slug).to.equal(topicDocs[0].slug);
+          expect(body.article.belongs_to).to.equal(topicDocs[0].slug);
+          expect(body.article.topic).to.be.an('object');
+          expect(body.article.topic._id).to.equal(`${topicDocs[0]._id}`);
+          expect(body.article.topic.slug).to.equal(topicDocs[0].slug);
           expect(body.article.created_by).to.be.an('object');
           expect(body.article.created_by._id).to.equal(`${userDocs[0]._id}`);
           expect(body.article.created_by.name).to.equal(userDocs[0].name);
@@ -94,24 +97,25 @@ describe('API - ARTICLES', () => {
     });
   });
 
-  describe('GET /api/topics/:topic_id/articles', () => {
+  describe('GET /api/topics/:topic_slug/articles', () => {
     it('responds with articles belonging to the specified topic', () => {
       return request
-        .get(`/api/topics/${topicDocs[1]._id}/articles`)
+        .get(`/api/topics/${topicDocs[1].slug}/articles`)
         .expect(200)
         .then(({ body }) => {
           expect(body).to.have.key('articles');
           expect(body.articles).to.be.an('array');
           expect(body.articles).to.have.lengthOf(2);
           const testArticle = body.articles[0];
-          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count');
+          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
           expect(testArticle._id).to.equal(`${articleDocs[2]._id}`);
           expect(testArticle.title).to.equal(articleDocs[2].title);
           expect(testArticle.body).to.equal(articleDocs[2].body);
           expect(testArticle.votes).to.equal(articleDocs[2].votes);
-          expect(testArticle.belongs_to).to.be.an('object');
-          expect(testArticle.belongs_to._id).to.equal(`${topicDocs[1]._id}`);
-          expect(testArticle.belongs_to.slug).to.equal(topicDocs[1].slug);
+          expect(testArticle.belongs_to).to.equal(topicDocs[1].slug);
+          expect(testArticle.topic).to.be.an('object');
+          expect(testArticle.topic._id).to.equal(`${topicDocs[1]._id}`);
+          expect(testArticle.topic.slug).to.equal(topicDocs[1].slug);
           expect(testArticle.created_by).to.be.an('object');
           expect(testArticle.created_by._id).to.equal(`${userDocs[0]._id}`);
           expect(testArticle.created_by.name).to.equal(userDocs[0].name);
@@ -121,32 +125,32 @@ describe('API - ARTICLES', () => {
         });
     });
 
-    it('Error: responds with a 400 error when request contains an invalid topic_id', () => {
-      return request
-        .get('/api/topics/passat/articles')
-        .expect(400)
-        .then(({ body }) => {
-          expect(body).to.have.all.keys('statusCode', 'error', 'message');
-          expect(body.statusCode).to.equal(400);
-          expect(body.error).to.equal('CastError');
-          expect(body.message).to.equal('Cast to ObjectId failed for value "passat" at path "belongs_to" for model "articles"');
-        });
-    });
+    // it('Error: responds with a 400 error when request contains an invalid topic_slug', () => {
+    //   return request
+    //     .get('/api/topics/passat/articles')
+    //     .expect(400)
+    //     .then(({ body }) => {
+    //       expect(body).to.have.all.keys('statusCode', 'error', 'message');
+    //       expect(body.statusCode).to.equal(400);
+    //       expect(body.error).to.equal('CastError');
+    //       expect(body.message).to.equal('Cast to ObjectId failed for value "passat" at path "belongs_to" for model "articles"');
+    //     });
+    // });
 
-    it('Error: responds with a 404 error when passed a valid topic_id that doesn`t exist', () => {
+    it('Error: responds with a 404 error when passed a topic_slug that doesn`t exist', () => {
       return request
-        .get('/api/topics/507f191e810c19729de860ea/articles')
+        .get('/api/topics/knitting/articles')
         .expect(404)
         .then(({ body }) => {
           expect(body).to.have.all.keys('statusCode', 'error', 'message');
           expect(body.statusCode).to.equal(404);
           expect(body.error).to.equal('Not Found');
-          expect(body.message).to.equal('Articles not found for topic: 507f191e810c19729de860ea');
+          expect(body.message).to.equal('Articles not found for topic: knitting');
         });
     });
   });
 
-  describe('POST /api/topics/:topic_id/articles', () => {
+  describe('POST /api/topics/:topic_slug/articles', () => {
     it('responds with the successfully posted article', () => {
       const newArticle = {
         title: 'The first of many API posts',
@@ -154,19 +158,20 @@ describe('API - ARTICLES', () => {
         created_by: `${userDocs[0]._id}`
       };
       return request
-        .post(`/api/topics/${topicDocs[0]._id}/articles`)
+        .post(`/api/topics/${topicDocs[0].slug}/articles`)
         .send(newArticle)
         .expect(201)
         .then(({ body }) => {
           expect(body).to.have.key('article');
           expect(body.article).to.be.an('object');
-          expect(body.article).to.include.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count');
+          expect(body.article).to.include.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
           expect(body.article.title).to.equal(newArticle.title);
           expect(body.article.body).to.equal(newArticle.body);
           expect(body.article.votes).to.equal(0);
-          expect(body.article.belongs_to).to.be.an('object');
-          expect(body.article.belongs_to._id).to.equal(`${topicDocs[0]._id}`);
-          expect(body.article.belongs_to.slug).to.equal(topicDocs[0].slug);
+          expect(body.article.belongs_to).to.equal(`${topicDocs[0]._id}`);
+          expect(body.article.topic).to.be.an('object');
+          expect(body.article.topic._id).to.equal(`${topicDocs[0]._id}`);
+          expect(body.article.topic.slug).to.equal(topicDocs[0].slug);
           expect(body.article.created_by).to.be.an('object');
           expect(body.article.created_by._id).to.equal(`${userDocs[0]._id}`);
           expect(body.article.created_by.name).to.equal(userDocs[0].name);
@@ -176,39 +181,21 @@ describe('API - ARTICLES', () => {
         });
     });
 
-    it('Error: responds with a 400 error when request contains an invalid topic_id', () => {
-      const newArticle = {
-        title: 'The second of many API posts',
-        body: 'Don`t forget to handle your errors!',
-        created_by: `${userDocs[0]._id}`
-      };
-      return request
-        .post('/api/topics/beetle/articles')
-        .send(newArticle)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body).to.have.all.keys('statusCode', 'error', 'message');
-          expect(body.statusCode).to.equal(400);
-          expect(body.error).to.equal('CastError');
-          expect(body.message).to.equal('Cast to ObjectId failed for value "beetle" at path "_id" for model "topics"');
-        });
-    });
-
-    it('Error: responds with a 404 error when passed a valid topic_id that doesn`t exist', () => {
+    it('Error: responds with a 404 error when passed a topic_slug that doesn`t exist', () => {
       const newArticle = {
         title: 'The third of many API posts',
         body: 'Don`t forget to handle your errors!',
         created_by: `${userDocs[0]._id}`
       };
       return request
-        .post('/api/topics/507f191e810c19729de860ea/articles')
+        .post('/api/topics/fishing/articles')
         .send(newArticle)
         .expect(404)
         .then(({ body }) => {
           expect(body).to.have.all.keys('statusCode', 'error', 'message');
           expect(body.statusCode).to.equal(404);
           expect(body.error).to.equal('Not Found');
-          expect(body.message).to.equal('Topic with ID 507f191e810c19729de860ea does not exist');
+          expect(body.message).to.equal('Topic with slug fishing does not exist');
         });
     });
 
@@ -218,7 +205,7 @@ describe('API - ARTICLES', () => {
         created_by: `${userDocs[0]._id}`
       };
       return request
-        .post(`/api/topics/${topicDocs[0]._id}/articles`)
+        .post('/api/topics/cats/articles')
         .send(newArticle)
         .expect(400)
         .then(({ body }) => {
@@ -235,7 +222,7 @@ describe('API - ARTICLES', () => {
         created_by: `${userDocs[0]._id}`
       };
       return request
-        .post(`/api/topics/${topicDocs[0]._id}/articles`)
+        .post('/api/topics/mitch/articles')
         .send(newArticle)
         .expect(400)
         .then(({ body }) => {
@@ -288,7 +275,7 @@ describe('API - ARTICLES', () => {
         created_by: '507f191e810c19729de860ea'
       };
       return request
-        .post(`/api/topics/${topicDocs[0]._id}/articles`)
+        .post('/api/topics/mitch/articles')
         .send(newArticle)
         .expect(404)
         .then(({ body }) => {
@@ -308,12 +295,12 @@ describe('API - ARTICLES', () => {
         .then(({ body }) => {
           expect(body).to.have.key('article');
           expect(body.article).to.be.an('object');
-          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by');
+          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'topic');
           expect(body.article._id).to.equal(`${articleDocs[0]._id}`);
           expect(body.article.title).to.equal(articleDocs[0].title);
           expect(body.article.body).to.equal(articleDocs[0].body);
           expect(body.article.votes).to.equal(articleDocs[0].votes + 1);
-          expect(body.article.belongs_to).to.equal(`${topicDocs[0]._id}`);
+          expect(body.article.belongs_to).to.equal(`${topicDocs[0].slug}`);
           expect(body.article.created_by).to.equal(`${userDocs[0]._id}`);
           return request.get(`/api/articles/${articleDocs[0]._id}`);
         })
@@ -332,12 +319,12 @@ describe('API - ARTICLES', () => {
         .then(({ body }) => {
           expect(body).to.have.key('article');
           expect(body.article).to.be.an('object');
-          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by');
+          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'topic');
           expect(body.article._id).to.equal(`${articleDocs[0]._id}`);
           expect(body.article.title).to.equal(articleDocs[0].title);
           expect(body.article.body).to.equal(articleDocs[0].body);
           expect(body.article.votes).to.equal(articleDocs[0].votes - 1);
-          expect(body.article.belongs_to).to.equal(`${topicDocs[0]._id}`);
+          expect(body.article.belongs_to).to.equal(`${topicDocs[0].slug}`);
           expect(body.article.created_by).to.equal(`${userDocs[0]._id}`);
           return request.get(`/api/articles/${articleDocs[0]._id}`);
         })

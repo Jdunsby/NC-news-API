@@ -7,8 +7,8 @@ const getTopics = async (req, res) => {
 };
 
 const getTopicById = async (req, res) => {
-  const { topic_id } = req.params;
-  const topic = await Topic.findById(topic_id);
+  const { topic_slug } = req.params;
+  const topic = await Topic.findById(topic_slug);
   if(!topic) throw notFound('Topic not found');
   res.status(200).send({ topic });
 };
