@@ -4,8 +4,8 @@ const { getArticlesByTopicId, postArticle } = require('../controllers/articles')
 const { withErrorHandling } = require('../utils/api');
 
 router.get('/', withErrorHandling(getTopics));
-router.get('/:topic_id', withErrorHandling(getTopicById));
-router.route('/:topic_id/articles')
+router.get('/:topic_slug', withErrorHandling(getTopicById));
+router.route('/:topic_slug/articles')
   .get(withErrorHandling(getArticlesByTopicId))
   .post(withErrorHandling(postArticle));
 
