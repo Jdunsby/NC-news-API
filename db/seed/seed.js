@@ -10,12 +10,10 @@ const seedDB = async (userData, topicData, articleData, commentData) => {
     User.insertMany(userData)
   ]);
 
-  //Create reference objects for topic's and user's mongo IDs
-  const topicRef = createRef(topics, 'slug', '_id');
+  //Create reference objects for user's mongo IDs
   const userRef = createRef(users, 'username', '_id');
 
-  //Replace article's references with corresponding mongo IDs
-  articleData = addRefs(topicRef, articleData, 'belongs_to');
+  // Replace article's references with corresponding mongo IDs
   articleData = addRefs(userRef, articleData, 'created_by');
 
   //Seed article data
