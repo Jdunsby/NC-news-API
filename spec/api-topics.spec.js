@@ -34,7 +34,7 @@ describe('API - TOPICS', () => {
     });
   });
 
-  describe('GET /api/topics/:topic_id ', () => {
+  describe('GET /api/topics/:topic_slug ', () => {
     it('responds with the requested topic', () => {
       return request
         .get(`/api/topics/${topicDocs[1]._id}`)
@@ -49,7 +49,7 @@ describe('API - TOPICS', () => {
         });
     });
 
-    it('Error: responds with a 400 error when request contains an invalid topic_id', () => {
+    it('Error: responds with a 400 error when request contains an invalid topic_slug', () => {
       return request
         .get('/api/topics/polo')
         .expect(400)
@@ -61,7 +61,7 @@ describe('API - TOPICS', () => {
         });
     });
 
-    it('Error: responds with a 404 error when passed a valid topic_id that doesn`t exist', () => {
+    it('Error: responds with a 404 error when passed a valid topic_slug that doesn`t exist', () => {
       return request
         .get('/api/topics/507f191e810c19729de860ea')
         .expect(404)

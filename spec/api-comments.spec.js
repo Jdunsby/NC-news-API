@@ -85,7 +85,7 @@ describe('API - COMMENTS', () => {
         });
     });
 
-    it('Error: responds with a 400 error when request contains an invalid topic_id', () => {
+    it('Error: responds with a 400 error when request contains an invalid topic_slug', () => {
       const newArticle = {
         title: 'The second of many API posts',
         body: 'Don`t forget to handle your errors!',
@@ -103,7 +103,7 @@ describe('API - COMMENTS', () => {
         });
     });
 
-    it('Error: responds with a 404 error when passed a valid topic_id that doesn`t exist', () => {
+    it('Error: responds with a 404 error when passed a valid topic_slug that doesn`t exist', () => {
       const newComment = {
         body: 'Nice article!',
         created_by: `${userDocs[0]._id}`
