@@ -31,8 +31,11 @@ describe('API - COMMENTS', () => {
           expect(testComment.body).to.equal(commentDocs[0].body);
           expect(testComment.votes).to.equal(commentDocs[0].votes);
           expect(`${testComment.belongs_to}`).to.equal(`${articleDocs[0]._id}`);
-          expect(`${testComment.created_by}`).to.equal(`${userDocs[1]._id}`);
-        });
+          expect(testComment.created_by).to.be.an('object');
+          expect(testComment.created_by._id).to.equal(`${userDocs[1]._id}`);
+          expect(testComment.created_by.name).to.equal(userDocs[1].name);
+          expect(testComment.created_by.username).to.equal(userDocs[1].username);
+          expect(testComment.created_by.avatar_url).to.equal(userDocs[1].avatar_url);        });
     });
 
     it('Error: responds with a 400 error when request contains an invalid article_id', () => {
@@ -85,7 +88,7 @@ describe('API - COMMENTS', () => {
         });
     });
 
-    it('Error: responds with a 400 error when request contains an invalid topic_id', () => {
+    it('Error: responds with a 400 error when request contains an invalid topic_slug', () => {
       const newArticle = {
         title: 'The second of many API posts',
         body: 'Don`t forget to handle your errors!',
@@ -103,7 +106,7 @@ describe('API - COMMENTS', () => {
         });
     });
 
-    it('Error: responds with a 404 error when passed a valid topic_id that doesn`t exist', () => {
+    it('Error: responds with a 404 error when passed a valid topic_slug that doesn`t exist', () => {
       const newComment = {
         body: 'Nice article!',
         created_by: `${userDocs[0]._id}`

@@ -4,7 +4,8 @@ const { Comment, Article, User } = require('../models');
 
 const getCommentsByArticleId = async (req, res) => {
   const { article_id } = req.params;
-  const comments = await Comment.find({ belongs_to: article_id });
+  const comments = await Comment.find({ belongs_to: article_id })
+    .populate('created_by');
   if(!comments.length) throw notFound(`There are no comments for article: ${article_id}`);
   res.status(200).send({ comments });
 };
