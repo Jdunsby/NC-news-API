@@ -67,7 +67,7 @@ const postArticle = async (req, res) => {
     comment_count: 0,
     topic: topic.toObject(),
     user: user.toObject()
-  };  
+  };
   res.status(201).send({ article });
 };
 
