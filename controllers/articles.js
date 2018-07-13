@@ -6,7 +6,6 @@ const { addCommentCount } = require('../utils/api');
 const getArticles = async (req, res) => {
   let articles = await Article.find()
     .populate('topic')
-    .populate('user')
     .lean();
   articles = await addCommentCount(articles);
   res.status(200).send({ articles });
@@ -17,7 +16,6 @@ const getArticleById = async (req, res) => {
   const { article_id } = req.params;
   let article = await Article.findById(article_id)
     .populate('topic')
-    .populate('user')
     .lean();
   if(!article) throw notFound('Article not found');
   [article] = await addCommentCount([article]);
@@ -29,7 +27,6 @@ const getArticlesByTopicId = async (req, res) => {
   const { topic_slug } = req.params;
   let articles = await Article.find({ belongs_to: topic_slug })
     .populate('topic')
-    .populate('user')
     .lean();
   if(!articles || !articles.length) throw notFound(`Articles not found for topic: ${topic_slug}`);
   articles =  await addCommentCount(articles);
@@ -66,7 +63,6 @@ const postArticle = async (req, res) => {
     ...article.toObject(),
     comment_count: 0,
     topic: topic.toObject(),
-    user: user.toObject()
   };
   res.status(201).send({ article });
 };

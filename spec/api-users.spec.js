@@ -41,7 +41,7 @@ describe('API - USERS', () => {
   describe('GET /api/users/:user_id', () => {
     it('responds with the requested user', () => {
       return request
-        .get(`/api/users/${userDocs[1]._id}`)
+        .get(`/api/users/${userDocs[1].username}`)
         .expect(200)
         .then(({ body }) => {
           expect(body).to.have.key('user');
@@ -54,21 +54,9 @@ describe('API - USERS', () => {
         });
     });
 
-    it('Error: responds with a 400 error when request contains an invalid user_id', () => {
+    it('Error: responds with a 404 error when passed a valid username that doesn`t exist', () => {
       return request
         .get('/api/users/lupo')
-        .expect(400)
-        .then(({ body }) => {
-          expect(body).to.have.all.keys('statusCode', 'error', 'message');
-          expect(body.statusCode).to.equal(400);
-          expect(body.error).to.equal('CastError');
-          expect(body.message).to.equal('Cast to ObjectId failed for value "lupo" at path "_id" for model "users"');
-        });
-    });
-
-    it('Error: responds with a 404 error when passed a valid user_id that doesn`t exist', () => {
-      return request
-        .get('/api/users/507f191e810c19729de860ea')
         .expect(404)
         .then(({ body }) => {
           expect(body).to.have.all.keys('statusCode', 'error', 'message');

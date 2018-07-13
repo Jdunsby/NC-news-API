@@ -38,11 +38,4 @@ ArticleSchema.virtual('topic', {
   justOne: true
 });
 
-ArticleSchema.virtual('user', {
-  ref: 'users',
-  localField: 'created_by',
-  foreignField: 'username',
-  justOne: true
-});
-
 module.exports = mongoose.model('articles', ArticleSchema);
