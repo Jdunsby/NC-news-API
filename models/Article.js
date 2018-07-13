@@ -20,15 +20,29 @@ const ArticleSchema = new Schema({
     default: Date.now
   },
   belongs_to: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'topics',
     required: true
   },
   created_by: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'users',
     required: true
   }
+}, { toJSON: { virtuals: true } });
+
+ArticleSchema.virtual('topic', {
+  ref: 'topics',
+  localField: 'belongs_to',
+  foreignField: 'slug',
+  justOne: true
+});
+
+ArticleSchema.virtual('user', {
+  ref: 'users',
+  localField: 'created_by',
+  foreignField: 'username',
+  justOne: true
 });
 
 module.exports = mongoose.model('articles', ArticleSchema);
