@@ -23,7 +23,7 @@ const getArticleById = async (req, res) => {
 };
 
 
-const getArticlesByTopicId = async (req, res) => {
+const getArticlesByTopic = async (req, res) => {
   const { topic_slug } = req.params;
   let articles = await Article.find({ belongs_to: topic_slug })
     .populate('topic')
@@ -33,6 +33,16 @@ const getArticlesByTopicId = async (req, res) => {
   res.status(200).send({ articles });
 };
 
+
+const getArticlesByUser = async (req, res) => {
+  const { username } = req.params;
+  let articles = await Article.find({ created_by: username })
+    .populate('topic')
+    .lean();
+  if(!articles || !articles.length) throw notFound(`Articles not found for user: ${username}`);
+  articles = await addCommentCount(articles);
+  res.status(200).send({ articles });
+};
 
 const postArticle = async (req, res) => {
   const { topic_slug } = req.params;
@@ -95,7 +105,8 @@ const deleteArticle = async (req, res) =>  {
 module.exports = {
   getArticles,
   getArticleById,
-  getArticlesByTopicId,
+  getArticlesByTopic,
+  getArticlesByUser,
   postArticle,
   voteOnArticle,
   deleteArticle

@@ -15,7 +15,8 @@ const apiRootData = {
   'PUT_vote_on_comment': `${API_URL}/api/comments/{comment_id}?vote={up/down}`,
   'DELETE_comment': `${API_URL}/api/comments/{comment_id}`,
   'GET_users': `${API_URL}/api/users`,
-  'GET_user_by_id': `${API_URL}/api/users/{user_id}`
+  'GET_user_by_id': `${API_URL}/api/users/{user_id}`,
+  'GET_articles_by_user': `${API_URL}/api/users/{user_id}/articles`
 };
 
 module.exports = apiRootData;
