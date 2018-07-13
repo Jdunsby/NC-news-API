@@ -26,7 +26,7 @@ describe('API - ARTICLES', () => {
           expect(body.articles).to.be.an('array');
           expect(body.articles).to.have.lengthOf(articleDocs.length);
           const [ testArticle ] = body.articles;
-          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic', 'user');
+          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
           expect(testArticle._id).to.equal(`${articleDocs[0]._id}`);
           expect(testArticle.title).to.equal(articleDocs[0].title);
           expect(testArticle.body).to.equal(articleDocs[0].body);
@@ -37,12 +37,6 @@ describe('API - ARTICLES', () => {
           expect(testArticle.topic.slug).to.equal(topicDocs[0].slug);
           expect(testArticle.topic.fa_icon).to.equal(topicDocs[0].fa_icon);
           expect(testArticle.created_by).to.equal(userDocs[0].username);
-          expect(testArticle.user).to.be.an('object');
-          expect(testArticle.user._id).to.equal(`${userDocs[0]._id}`);
-          expect(testArticle.user.name).to.equal(userDocs[0].name);
-          expect(testArticle.user.username).to.equal(userDocs[0].username);
-          expect(testArticle.user.avatar_url).to.equal(userDocs[0].avatar_url);
-          expect(testArticle.comment_count).to.equal(2);
         });
     });
   });
@@ -55,7 +49,7 @@ describe('API - ARTICLES', () => {
         .then(({ body }) => {
           expect(body).to.have.key('article');
           expect(body.article).to.be.an('object');
-          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic', 'user');
+          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
           expect(body.article._id).to.equal(`${articleDocs[0]._id}`);
           expect(body.article.title).to.equal(articleDocs[0].title);
           expect(body.article.body).to.equal(articleDocs[0].body);
@@ -65,12 +59,6 @@ describe('API - ARTICLES', () => {
           expect(body.article.topic._id).to.equal(`${topicDocs[0]._id}`);
           expect(body.article.topic.slug).to.equal(topicDocs[0].slug);
           expect(body.article.created_by).to.equal(userDocs[0].username);
-          expect(body.article.user).to.be.an('object');
-          expect(body.article.user._id).to.equal(`${userDocs[0]._id}`);
-          expect(body.article.user.name).to.equal(userDocs[0].name);
-          expect(body.article.user.username).to.equal(userDocs[0].username);
-          expect(body.article.user.avatar_url).to.equal(userDocs[0].avatar_url);
-          expect(body.article.comment_count).to.equal(2);
         });
     });
 
@@ -109,7 +97,7 @@ describe('API - ARTICLES', () => {
           expect(body.articles).to.be.an('array');
           expect(body.articles).to.have.lengthOf(2);
           const testArticle = body.articles[0];
-          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic', 'user');
+          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
           expect(testArticle._id).to.equal(`${articleDocs[2]._id}`);
           expect(testArticle.title).to.equal(articleDocs[2].title);
           expect(testArticle.body).to.equal(articleDocs[2].body);
@@ -119,12 +107,6 @@ describe('API - ARTICLES', () => {
           expect(testArticle.topic._id).to.equal(`${topicDocs[1]._id}`);
           expect(testArticle.topic.slug).to.equal(topicDocs[1].slug);
           expect(testArticle.created_by).to.equal(userDocs[0].username);
-          expect(testArticle.user).to.be.an('object');
-          expect(testArticle.user._id).to.equal(`${userDocs[0]._id}`);
-          expect(testArticle.user.name).to.equal(userDocs[0].name);
-          expect(testArticle.user.username).to.equal(userDocs[0].username);
-          expect(testArticle.user.avatar_url).to.equal(userDocs[0].avatar_url);
-          expect(testArticle.comment_count).to.equal(2);
         });
     });
 
@@ -155,7 +137,7 @@ describe('API - ARTICLES', () => {
         .then(({ body }) => {
           expect(body).to.have.key('article');
           expect(body.article).to.be.an('object');
-          expect(body.article).to.include.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic', 'user');
+          expect(body.article).to.include.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
           expect(body.article.title).to.equal(newArticle.title);
           expect(body.article.body).to.equal(newArticle.body);
           expect(body.article.votes).to.equal(0);
@@ -164,12 +146,6 @@ describe('API - ARTICLES', () => {
           expect(body.article.topic._id).to.equal(`${topicDocs[0]._id}`);
           expect(body.article.topic.slug).to.equal(topicDocs[0].slug);
           expect(body.article.created_by).to.equal(userDocs[0].username);          
-          expect(body.article.user).to.be.an('object');
-          expect(body.article.user._id).to.equal(`${userDocs[0]._id}`);
-          expect(body.article.user.name).to.equal(userDocs[0].name);
-          expect(body.article.user.username).to.equal(userDocs[0].username);
-          expect(body.article.user.avatar_url).to.equal(userDocs[0].avatar_url);
-          expect(body.article.comment_count).to.equal(0);
         });
     });
 
@@ -287,7 +263,7 @@ describe('API - ARTICLES', () => {
         .then(({ body }) => {
           expect(body).to.have.key('article');
           expect(body.article).to.be.an('object');
-          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'topic', 'user');
+          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'topic');
           expect(body.article._id).to.equal(`${articleDocs[0]._id}`);
           expect(body.article.title).to.equal(articleDocs[0].title);
           expect(body.article.body).to.equal(articleDocs[0].body);
@@ -311,7 +287,7 @@ describe('API - ARTICLES', () => {
         .then(({ body }) => {
           expect(body).to.have.key('article');
           expect(body.article).to.be.an('object');
-          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'topic', 'user');
+          expect(body.article).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'topic');
           expect(body.article._id).to.equal(`${articleDocs[0]._id}`);
           expect(body.article.title).to.equal(articleDocs[0].title);
           expect(body.article.body).to.equal(articleDocs[0].body);
