@@ -62,7 +62,7 @@ describe('seedDB()', () => {
       expect(testArticle.title).to.equal('Living in the shadow of a great man');
       expect(testArticle.body).to.equal('I find this existence challenging');
       expect(testArticle.belongs_to).to.eql(topicDocs[0].slug);
-      expect(testArticle.created_by).to.eql(userDocs[0]._id);
+      expect(testArticle.created_by).to.eql(userDocs[0].username);
       expect(testArticle.created_at).to.be.an.instanceOf(Date);
     });
   });

@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const { notFound, badRequest } = require('boom');
 const { Article, Topic, User } = require('../models');
 const { addCommentCount } = require('../utils/api');
@@ -7,7 +6,7 @@ const { addCommentCount } = require('../utils/api');
 const getArticles = async (req, res) => {
   let articles = await Article.find()
     .populate('topic')
-    .populate('created_by')
+    .populate('user')
     .lean();
   articles = await addCommentCount(articles);
   res.status(200).send({ articles });
@@ -18,7 +17,7 @@ const getArticleById = async (req, res) => {
   const { article_id } = req.params;
   let article = await Article.findById(article_id)
     .populate('topic')
-    .populate('created_by')
+    .populate('user')
     .lean();
   if(!article) throw notFound('Article not found');
   [article] = await addCommentCount([article]);
@@ -30,7 +29,7 @@ const getArticlesByTopicId = async (req, res) => {
   const { topic_slug } = req.params;
   let articles = await Article.find({ belongs_to: topic_slug })
     .populate('topic')
-    .populate('created_by')
+    .populate('user')
     .lean();
   if(!articles || !articles.length) throw notFound(`Articles not found for topic: ${topic_slug}`);
   articles =  await addCommentCount(articles);
@@ -41,16 +40,21 @@ const getArticlesByTopicId = async (req, res) => {
 const postArticle = async (req, res) => {
   const { topic_slug } = req.params;
   const { title, body, created_by } = req.body;
-  if(!mongoose.Types.ObjectId.isValid(created_by)) {
-    throw badRequest(`"created_by" value '${created_by}' is an invalid user ID`);
+
+  if (!title || !body || !created_by) {
+    throw badRequest('Request body must contain valid title, body and created_by properties');
+  }
+  else if(typeof created_by !== 'string') {
+    throw badRequest('Request body\'s created_by property must be a string');
   }
 
   const [topic, user] = await Promise.all([
     Topic.findOne({ slug: topic_slug }),
-    User.findById(created_by)
+    User.findOne({ username: created_by })
   ]);
+
   if(!topic) throw notFound(`Topic with slug ${topic_slug} does not exist`);
-  if(!user) throw notFound(`User with ID ${created_by} does not exist`);
+  if(!user) throw notFound(`User with username ${created_by} does not exist`);
   const newArticle = new Article({
     title,
     body,
@@ -58,9 +62,12 @@ const postArticle = async (req, res) => {
     belongs_to: topic._id
   });
   let article = await newArticle.save();
-  article = {...article.toObject(), comment_count: 0, topic: topic.toObject()};
-  article = await Article.populate(article, 'created_by');
-  
+  article = {
+    ...article.toObject(),
+    comment_count: 0,
+    topic: topic.toObject(),
+    user: user.toObject()
+  };  
   res.status(201).send({ article });
 };
 

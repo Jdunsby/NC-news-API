@@ -25,7 +25,7 @@ const ArticleSchema = new Schema({
     required: true
   },
   created_by: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'users',
     required: true
   }
@@ -35,6 +35,13 @@ ArticleSchema.virtual('topic', {
   ref: 'topics',
   localField: 'belongs_to',
   foreignField: 'slug',
+  justOne: true
+});
+
+ArticleSchema.virtual('user', {
+  ref: 'users',
+  localField: 'created_by',
+  foreignField: 'username',
   justOne: true
 });
 
