@@ -123,6 +123,43 @@ describe('API - ARTICLES', () => {
     });
   });
 
+  describe('GET /api/users/:username/articles', () => {
+    it('responds with articles belonging to the specified topic', () => {
+      return request
+        .get(`/api/users/${userDocs[1].username}/articles`)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.have.key('articles');
+          expect(body.articles).to.be.an('array');
+          expect(body.articles).to.have.lengthOf(2);
+          const testArticle = body.articles[0];
+          expect(testArticle).to.include.all.keys('_id', 'title', 'body', 'votes', 'created_at', 'belongs_to', 'created_by', 'comment_count', 'topic');
+          expect(testArticle._id).to.equal(`${articleDocs[1]._id}`);
+          expect(testArticle.title).to.equal(articleDocs[1].title);
+          expect(testArticle.body).to.equal(articleDocs[1].body);
+          expect(testArticle.votes).to.equal(articleDocs[1].votes);
+          expect(testArticle.belongs_to).to.equal(topicDocs[0].slug);
+          expect(testArticle.topic).to.be.an('object');
+          expect(testArticle.topic._id).to.equal(`${topicDocs[0]._id}`);
+          expect(testArticle.topic.slug).to.equal(topicDocs[0].slug);
+          expect(testArticle.created_by).to.equal(userDocs[1].username);
+        });
+    });
+
+    it('Error: responds with a 404 error when passed a topic_slug that doesn`t exist', () => {
+      return request
+        .get('/api/users/bob/articles')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.have.all.keys('statusCode', 'error', 'message');
+          expect(body.statusCode).to.equal(404);
+          expect(body.error).to.equal('Not Found');
+          expect(body.message).to.equal('Articles not found for user: bob');
+        });
+    });
+  });
+
+
   describe('POST /api/topics/:topic_slug/articles', () => {
     it('responds with the successfully posted article', () => {
       const newArticle = {

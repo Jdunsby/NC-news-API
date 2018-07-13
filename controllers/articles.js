@@ -34,6 +34,16 @@ const getArticlesByTopicId = async (req, res) => {
 };
 
 
+const getArticlesByUser = async (req, res) => {
+  const { username } = req.params;
+  let articles = await Article.find({ created_by: username })
+    .populate('topic')
+    .lean();
+  if(!articles || !articles.length) throw notFound(`Articles not found for user: ${username}`);
+  articles = await addCommentCount(articles);
+  res.status(200).send({ articles });
+};
+
 const postArticle = async (req, res) => {
   const { topic_slug } = req.params;
   const { title, body, created_by } = req.body;
@@ -96,6 +106,7 @@ module.exports = {
   getArticles,
   getArticleById,
   getArticlesByTopicId,
+  getArticlesByUser,
   postArticle,
   voteOnArticle,
   deleteArticle
