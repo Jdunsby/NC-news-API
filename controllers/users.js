@@ -6,14 +6,14 @@ const getUsers = async (req, res) => {
   res.status(200).send({users});
 };
 
-const getUserById = async (req, res) => {
-  const { user_id } = req.params;
-  const user = await User.findById(user_id);
+const getUserByUsername = async (req, res) => {
+  const { username } = req.params;
+  const user = await User.findOne({ username });
   if(!user) throw notFound('User not found');
   res.status(200).send({user});
 };
 
 module.exports = {
   getUsers,
-  getUserById
+  getUserByUsername
 };
