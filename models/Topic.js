@@ -14,6 +14,7 @@ const TopicSchema = new Schema({
   },
   fa_icon: {
     type: String,
+    lowercase: true,
     required: true
   }
 });
